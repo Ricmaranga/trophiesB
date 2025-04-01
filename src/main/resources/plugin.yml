@@ -1,0 +1,23 @@
+authors: [ Ricmaranga ]
+name: Trophies
+version: '${project.version}'
+api-version: '1.21'
+prefix: TROPHIES
+description: A plugin to collect trophies
+
+main: it.pose.trophies.Trophies
+
+commands:
+  trophies:
+    description: Manage your trophies
+    usage: /trophies [create|give|reload|delete|remove|list|modify]
+    aliases: [ trofei ]
+    permission: trophies.use
+    permission-message: You don't have permission to use this command!
+permissions:
+  trophies.admin:
+    description: Admin permissions for trophies
+    default: op
+  trophies.use:
+    description: Use trophies command
+    default: true
