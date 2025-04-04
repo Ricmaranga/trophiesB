@@ -1,8 +1,9 @@
 package it.pose.trophies.listeners;
 
-import de.tr7zw.nbtapi.NBTItem;
 import it.pose.trophies.Trophies;
 import it.pose.trophies.Trophy;
+import it.pose.trophies.buttons.ButtonCreator;
+import it.pose.trophies.buttons.ButtonRegistry;
 import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.PlayerDataManager;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,15 +11,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Map;
 
 public class EventListener implements Listener {
 
@@ -40,7 +36,7 @@ public class EventListener implements Listener {
         player = e.getPlayer();
     }
 
-    @EventHandler
+    /* @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
 
         e.setCancelled(true);
@@ -85,6 +81,21 @@ public class EventListener implements Listener {
 
             playerData.put(trophySlot, true);
             dataManager.savePlayerData(player, playerData);
+        }
+    } */
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+
+        event.setCancelled(true);
+
+        ItemStack clickedItem = event.getCurrentItem();
+        ButtonCreator button = ButtonRegistry.get(clickedItem);
+
+        main.getLogger().severe(button.toString());
+
+        if (button != null) {
+            button.handleClick((Player) event.getWhoClicked(), event.getClick(), event.getInventory());
         }
     }
 

@@ -10,12 +10,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Map;
 
 public class Trophy {
-    public final Integer slot;
-    private final ItemStack item;
+
+    private String id;
+    private String name;
+    private ItemStack item;
+    private Integer slot;
+    private String lore;
+
 
     public Trophy(Integer slot, ItemStack item, String displayName) {
-        this.slot = slot;
-        this.item = processItem(item, displayName);
+
     }
 
     private ItemStack processItem(ItemStack baseItem, String displayName) {
@@ -28,7 +32,7 @@ public class Trophy {
             meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "§r§f" + displayName));
         }
 
-        meta.addEnchant(Enchantment.UNBREAKING, 1, false);
+        meta.addEnchant(Enchantment.MENDING, 1, false);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
         cloned.setItemMeta(meta);
@@ -57,6 +61,10 @@ public class Trophy {
                 (ItemStack) data.get("item"),
                 (String) data.get("item.display-name")
         );
+    }
+
+    public Integer getSlot(){
+        return slot;
     }
 
 }

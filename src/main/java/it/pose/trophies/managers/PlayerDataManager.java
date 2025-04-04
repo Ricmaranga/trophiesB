@@ -79,7 +79,7 @@ public class PlayerDataManager {
 
         playerTrophies = getPlayerData(player);
         playerDataset.remove(player.getUniqueId());
-        playerTrophies.put(trohpy.slot, false);
+        playerTrophies.put(trohpy.getSlot(), false);
         playerDataset.put(player.getUniqueId(), playerTrophies);
         savePlayerData(player, playerTrophies);
     }

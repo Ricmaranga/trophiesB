@@ -24,6 +24,7 @@ public class CommandsManager implements CommandExecutor, TabExecutor {
         subcommand.add(new DeleteCommand());
         subcommand.add(new DeleteCommand());
         subcommand.add(new PlayerCommand());
+        subcommand.add(new AdminCommand());
     }
 
     @Override
