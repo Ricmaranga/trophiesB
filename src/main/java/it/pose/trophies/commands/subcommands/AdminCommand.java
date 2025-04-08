@@ -1,7 +1,7 @@
 package it.pose.trophies.commands.subcommands;
 
 import it.pose.trophies.commands.SubCommand;
-import it.pose.trophies.gui.AdminGUI;
+import it.pose.trophies.gui.AdminGUIs;
 import org.bukkit.entity.Player;
 
 public class AdminCommand extends SubCommand {
@@ -22,6 +22,6 @@ public class AdminCommand extends SubCommand {
 
     @Override
     public void perform(Player player, String[] args) {
-        player.openInventory(AdminGUI.createAdminGUI(player));
+        player.openInventory(AdminGUIs.createAdminGUI(player));
     }
 }

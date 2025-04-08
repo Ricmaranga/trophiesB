@@ -1,10 +1,10 @@
 package it.pose.trophies.gui;
 
 import it.pose.trophies.Trophies;
-import it.pose.trophies.Trophy;
 import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
+import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class ShowcaseGUI {
 
@@ -24,13 +25,13 @@ public class ShowcaseGUI {
         final ConfigManager configManager = main.getConfigManager();
         final FileConfiguration config = configManager.getConfig();
 
-        Map<Integer, Trophy> trophies = trophyManager.getAllTrophies();
+        Map<UUID, Trophy> trophies = trophyManager.getAllTrophies();
 
         int slots = config.getInt("showcase-rows", 6) * 9;
 
         Inventory inv = Bukkit.createInventory(null, slots, config.getString("showcase-title", main.defaultTitle));
 
-        Map<Integer, Boolean> playerData = dataManager.getPlayerData(player);
+        Map<UUID, Boolean> playerData = dataManager.getPlayerData(player);
 
 
         if (playerData == null) {
@@ -39,15 +40,14 @@ public class ShowcaseGUI {
             }
         } else {
             for (int slot = 0; slot < slots; slot++) {
-                if (trophies.containsKey(slot)) {
-                    if (playerData.get(slot) != null) {
-                        if (playerData.get(slot)) {
-                            inv.setItem(slot, trophyManager.getTrophyItem(slot));
+                if (trophyManager.getTrophyBySlot(slot) != null) {
+                    Boolean value = playerData.get(trophyManager.getTrophyBySlot(slot).getUUID());
+                    if (value != null) {
+                        if (value) {
+                            inv.setItem(slot, trophyManager.getTrophyBySlot(slot).createItem());
                         } else {
                             inv.setItem(slot, null);
                         }
-                    } else {
-                        inv.setItem(slot, null);
                     }
                 } else {
                     inv.setItem(slot, new ItemStack(configManager.getPlaceholderMaterial(slot)));

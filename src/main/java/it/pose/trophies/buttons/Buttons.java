@@ -1,5 +1,6 @@
 package it.pose.trophies.buttons;
 
+import it.pose.trophies.handlers.ButtonsHandler;
 import org.bukkit.Material;
 
 public class Buttons {
@@ -25,6 +26,6 @@ public class Buttons {
     public static ButtonCreator createTrophy = new ButtonCreator.ButtonBuilder()
             .material(Material.BAMBOO)
             .name("§5Create trophy")
-            .onClick(e -> e.player.sendMessage("Create trophy"))
+            .onClick(e -> new ButtonsHandler().createTrophy(e))
             .build();
 }

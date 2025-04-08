@@ -5,10 +5,14 @@ import it.pose.trophies.listeners.EventListener;
 import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
+import it.pose.trophies.trophies.Trophy;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class Trophies extends JavaPlugin {
 
@@ -16,6 +20,8 @@ public class Trophies extends JavaPlugin {
     private ConfigManager configManager;
     private TrophyManager trophyManager;
     private PlayerDataManager playerDataManager;
+
+    public Map<UUID, Trophy> trophies = new HashMap<>();
 
     public String defaultTitle = "Trophies Showcase";
 
@@ -35,6 +41,8 @@ public class Trophies extends JavaPlugin {
 
         configManager.reloadConfig();
         trophyManager.reloadTrophies();
+
+        trophies = trophyManager.getAllTrophies();
 
 
         getCommand("trophies").setExecutor(new CommandsManager());

@@ -1,7 +1,7 @@
 package it.pose.trophies.managers;
 
 import it.pose.trophies.Trophies;
-import it.pose.trophies.Trophy;
+import it.pose.trophies.trophies.Trophy;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -14,8 +14,8 @@ import java.util.UUID;
 public class PlayerDataManager {
 
     private final Trophies main = Trophies.getInstance();
-    private final Map<UUID, Map<Integer, Boolean>> playerDataset = new HashMap<>();
-    private Map<Integer, Boolean> playerTrophies = new HashMap<>();
+    private final Map<UUID, Map<UUID, Boolean>> playerDataset = new HashMap<>();
+    private Map<UUID, Boolean> playerTrophies = new HashMap<>();
     private YamlConfiguration playerDataConfig;
     private final TrophyManager trophyManager = main.getTrophyManager();
 
@@ -35,7 +35,7 @@ public class PlayerDataManager {
 
         main.getLogger().warning("Riga 36: " + trophyManager.getAllTrophies().keySet());
 
-        for (Integer trophy : trophyManager.getAllTrophies().keySet()) {
+        for (UUID trophy : trophyManager.getAllTrophies().keySet()) {
             if (playerDataConfig.getBoolean(String.valueOf(trophy))) {
                 playerTrophies.put(trophy, true);
             }
@@ -53,13 +53,13 @@ public class PlayerDataManager {
         }
     }
 
-    public void savePlayerData(Player player, Map<Integer, Boolean> playerTrophies) {
+    public void savePlayerData(Player player, Map<UUID, Boolean> playerTrophies) {
 
         playerDataConfig = YamlConfiguration.loadConfiguration(new File(main.getDataFolder() + "/playerData", player.getUniqueId() + ".yml"));
 
-        Set<Integer> keys = playerTrophies.keySet();
+        Set<UUID> keys = playerTrophies.keySet();
 
-        for (Integer key : keys) {
+        for (UUID key : keys) {
             playerDataConfig.set(key.toString(), playerTrophies.get(key));
         }
 
@@ -70,7 +70,7 @@ public class PlayerDataManager {
         }
     }
 
-    public Map<Integer, Boolean> getPlayerData(Player player) {
+    public Map<UUID, Boolean> getPlayerData(Player player) {
 
         return playerDataset.get(player.getUniqueId());
     }
@@ -79,7 +79,7 @@ public class PlayerDataManager {
 
         playerTrophies = getPlayerData(player);
         playerDataset.remove(player.getUniqueId());
-        playerTrophies.put(trohpy.getSlot(), false);
+        playerTrophies.put(trohpy.getUUID(), false);
         playerDataset.put(player.getUniqueId(), playerTrophies);
         savePlayerData(player, playerTrophies);
     }

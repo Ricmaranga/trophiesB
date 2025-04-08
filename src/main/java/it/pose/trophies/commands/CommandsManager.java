@@ -1,7 +1,10 @@
 package it.pose.trophies.commands;
 
 import it.pose.trophies.Trophies;
-import it.pose.trophies.commands.subcommands.*;
+import it.pose.trophies.commands.subcommands.AdminCommand;
+import it.pose.trophies.commands.subcommands.GiveCommand;
+import it.pose.trophies.commands.subcommands.PlayerCommand;
+import it.pose.trophies.commands.subcommands.ReloadCommand;
 import it.pose.trophies.gui.ShowcaseGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,13 +21,9 @@ public class CommandsManager implements CommandExecutor, TabExecutor {
 
     public CommandsManager() {
         subcommand.add(new ReloadCommand());
-        subcommand.add(new GiveCommand());
-        subcommand.add(new CreateCommand());
-        subcommand.add(new ListCommand());
-        subcommand.add(new DeleteCommand());
-        subcommand.add(new DeleteCommand());
         subcommand.add(new PlayerCommand());
         subcommand.add(new AdminCommand());
+        subcommand.add(new GiveCommand());
     }
 
     @Override

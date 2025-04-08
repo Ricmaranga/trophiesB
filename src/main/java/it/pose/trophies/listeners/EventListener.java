@@ -1,11 +1,12 @@
 package it.pose.trophies.listeners;
 
 import it.pose.trophies.Trophies;
-import it.pose.trophies.Trophy;
 import it.pose.trophies.buttons.ButtonCreator;
 import it.pose.trophies.buttons.ButtonRegistry;
+import it.pose.trophies.gui.AdminGUIs;
 import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.PlayerDataManager;
+import it.pose.trophies.trophies.Trophy;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -36,69 +38,33 @@ public class EventListener implements Listener {
         player = e.getPlayer();
     }
 
-    /* @EventHandler
+
+    @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
 
-        e.setCancelled(true);
 
-        if (!e.getView().getTitle().equals(config.getString("showcase-title", main.defaultTitle))) return;
-
-
-        // e.getAction() == InventoryAction.PLACE_ALL return;
-        if (!(e.getWhoClicked() instanceof Player player)) return;
-
-        ItemStack cursorItem = e.getCurrentItem();
-        if (cursorItem == null) return;
-
-        NBTItem nbtItem = new NBTItem(cursorItem);
-        if (!nbtItem.hasTag("trophyId")) return;
-
-        Integer trophySlot = nbtItem.getInteger("trophyId");
-        Trophy trophy = main.getTrophyManager().getTrophy(nbtItem.getInteger("trophyId"));
-
-        if (trophy == null) return;
-        main.getLogger().info("Qui va 6");
-
-        Map<Integer, Boolean> playerData = dataManager.getPlayerData(player);
-
-        main.getLogger().info(playerData.get(trophySlot).toString());
-
-        if (!playerData.get(trophySlot)) {
-            player.sendMessage("§cYou haven't unlocked this trophy!");
+        if (e.getInventory().getType().equals(InventoryType.ANVIL)) {
+            e.setCancelled(true);
+            if (e.getRawSlot() == 2) {
+                ItemStack result = e.getCurrentItem();
+                if (result != null && result.hasItemMeta()) {
+                    Trophy trophy = new Trophy();
+                    trophy.setName(result.getItemMeta().getDisplayName());
+                    main.trophies.put(trophy.getUUID(), trophy);
+                }
+                e.getWhoClicked().closeInventory();
+                e.getWhoClicked().openInventory(AdminGUIs.createAdminGUI((Player) e.getWhoClicked()));
+            }
             return;
         }
 
-
-        if (e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-
-            ItemStack trophyPlaced = cursorItem.clone();
-            ItemMeta meta = trophyPlaced.getItemMeta();
-            meta.setUnbreakable(true);
-            meta.addItemFlags(ItemFlag.values());
-            trophyPlaced.setItemMeta(meta);
-
-            player.setItemOnCursor(null);
-
-            playerData.put(trophySlot, true);
-            dataManager.savePlayerData(player, playerData);
-        }
-    } */
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-
-        event.setCancelled(true);
-
-        ItemStack clickedItem = event.getCurrentItem();
+        ItemStack clickedItem = e.getCurrentItem();
         ButtonCreator button = ButtonRegistry.get(clickedItem);
 
-        main.getLogger().severe(button.toString());
-
         if (button != null) {
-            button.handleClick((Player) event.getWhoClicked(), event.getClick(), event.getInventory());
+            button.handleClick((Player) e.getWhoClicked(), e.getClick(), e.getInventory());
         }
     }
-
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
@@ -114,4 +80,5 @@ public class EventListener implements Listener {
             e.getPlayer().sendMessage("§cYou cannot place a trophy!");
         }
     }
+
 }

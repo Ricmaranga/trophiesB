@@ -1,12 +1,14 @@
 package it.pose.trophies.commands.subcommands;
 
 import it.pose.trophies.Trophies;
-import it.pose.trophies.Trophy;
 import it.pose.trophies.commands.SubCommand;
 import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
+import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class GiveCommand extends SubCommand {
 
@@ -39,12 +41,14 @@ public class GiveCommand extends SubCommand {
 
 
         TrophyManager trophyManager = Trophies.getInstance().getTrophyManager();
-        Trophy trophy = trophyManager.getTrophy(Integer.parseInt(args[2]));
+        UUID uuid = trophyManager.getUUIDByName(args[2]);
+        Trophy trophy = trophyManager.getTrophy(uuid);
+
         if (trophy == null) {
             player.sendMessage("§cTrophy not found!");
         }
 
-        trophyManager.giveTrophy(trophy, player);
+        trophyManager.awardTrophyToHotbar(target, uuid);
 
         playerDataManager.addPlayerData(target, trophy);
 
