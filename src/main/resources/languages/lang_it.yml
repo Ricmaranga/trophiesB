@@ -1,0 +1,47 @@
+prefix: "&5[&f&lTrofei&r&5]"
+default-command: "trofei" # /trofei
+
+trophy:
+  placed: "&aTrofeo piazzato con successo!"
+  already-placed: "&eHai già piazzato questo trofeo."
+  not-unlocked: "&cNon hai ancora sbloccato questo trofeo."
+  deleted: "&cTrofeo eliminato."
+  give-success: "&aHai dato a %player% il trofeo &e%trophy%&a."
+  receive: "&aHai ricevuto il trofeo: &e%trophy%&a!"
+  set-name: "&aNome del trofeo impostato a: &e%name%"
+  set-show_name: "&aNome mostrato del trofeo impostato a: &e%name%"
+  set-material: "&aMateriale del trofeo impostato a: &f%material%"
+  slot-already-taken: "&cQuesto slot è già occupato da un altro trofeo."
+  slot-set: "&aSlot del trofeo impostato a: &f%slot%"
+
+gui:
+  showcase-title: "&a&lI tuoi trofei"
+  admin-title: "&b&lAdmin GUI"
+  create-title: "&a&lCrea trofeo"
+  edit-title: "&e&lModifica trofeo"
+  list-title: "&6&lTutti i trofei"
+
+buttons:
+  set-name: "&6Imposta nome"
+  set-show-name: "&bImposta nome mostrato"
+  set-material: "&cImposta Materiale"
+  set-slot: "&dImposta Slot"
+  delete: "&cElimina trofeo"
+  back: "&7Indietro"
+  create: "&aCrea"
+  cancel: "&cCancella"
+  confirm: "&aConferma"
+  give: "&aDai trofeo"
+  list: "&eLista trofei"
+  reload: "&bRicarica config"
+
+player:
+  no-permission: "&cNon hai il permesso per eseguire questo comando."
+  command-only-by-player: "&cQuesto comando può essere eseguito solo dai giocatori."
+  invalid-trophy: "&cQuesto trofeo non esiste."
+  invalid-slot: "&cNon è uno slot valido (0-26)."
+  already-has-trophy: "&eIl giocatore ha già questo trofeo."
+  trophy-given: "&aTrofeo assegnato correttamente."
+
+commands:
+  usage: "Utilizzo"

@@ -1,14 +1,12 @@
 package it.pose.trophies.commands.subcommands;
 
-import it.pose.trophies.Lang;
 import it.pose.trophies.commands.SubCommand;
-import it.pose.trophies.gui.AdminGUI;
 import org.bukkit.entity.Player;
 
-public class AdminCommand extends SubCommand {
+public class HelpCommand extends SubCommand {
     @Override
     public String getName() {
-        return "admin";
+        return "help";
     }
 
     @Override
@@ -18,11 +16,11 @@ public class AdminCommand extends SubCommand {
 
     @Override
     public String getSyntax() {
-        return Lang.get("usage") + " /" + Lang.get("default-command") + " admin";
+        return "/trophies help";
     }
 
     @Override
     public void perform(Player player, String[] args) {
-        player.openInventory(AdminGUI.open());
+
     }
 }

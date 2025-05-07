@@ -1,5 +1,6 @@
 package it.pose.trophies.commands.subcommands;
 
+import it.pose.trophies.Lang;
 import it.pose.trophies.Trophies;
 import it.pose.trophies.commands.SubCommand;
 import it.pose.trophies.managers.PlayerDataManager;
@@ -8,6 +9,7 @@ import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class GiveCommand extends SubCommand {
@@ -50,9 +52,9 @@ public class GiveCommand extends SubCommand {
 
         trophyManager.awardTrophyToHotbar(target, uuid);
 
-        playerDataManager.addPlayerData(target, trophy);
+        PlayerDataManager.unlockTrophy(target, trophy, false);
 
 
-        player.sendMessage("§aTrophy §e" + args[2] + " §agiven to §e" + args[1]);
+        player.sendMessage(Lang.get("player.trophy-given", Map.of("player", args[1])));
     }
 }

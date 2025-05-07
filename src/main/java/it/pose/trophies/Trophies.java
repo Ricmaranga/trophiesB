@@ -39,11 +39,15 @@ public class Trophies extends JavaPlugin {
         trophyManager = new TrophyManager();
         playerDataManager = new PlayerDataManager();
 
+        PlayerDataManager.loadAll();
+
         configManager.reloadConfig();
         trophyManager.reloadTrophies();
 
-        trophies = trophyManager.getAllTrophies();
+        ConfigManager.init(this); // 💡 Initializes trophies.yml and other files
+        TrophyManager.loadTrophies();
 
+        trophies = TrophyManager.getAllTrophies();
 
         getCommand("trophies").setExecutor(new CommandsManager());
         getServer().getPluginManager().registerEvents(new EventListener(), this);
@@ -56,10 +60,16 @@ public class Trophies extends JavaPlugin {
 
         for (Player player : getServer().getOnlinePlayers()) {
             this.getLogger().info("Loading data for player " + player.getName());
-            playerDataManager.loadPlayerData(player.getUniqueId());
+            playerDataManager.loadPlayer(player.getUniqueId());
         }
 
+        saveDefaultConfig();
+        Lang.init(this);
+    }
 
+    @Override
+    public void onDisable() {
+        PlayerDataManager.saveAll();
     }
 
     public static Trophies getInstance() {

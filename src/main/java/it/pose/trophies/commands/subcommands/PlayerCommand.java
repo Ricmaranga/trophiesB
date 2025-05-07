@@ -23,6 +23,6 @@ public class PlayerCommand extends SubCommand {
 
     @Override
     public void perform(Player player, String[] args) {
-        player.openInventory(ShowcaseGUI.createShowcase(Trophies.getInstance().getServer().getPlayer(args[1])));
+        player.openInventory(ShowcaseGUI.open(Trophies.getInstance().getServer().getPlayer(args[1])));
     }
 }

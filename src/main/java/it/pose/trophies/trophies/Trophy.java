@@ -1,17 +1,22 @@
 package it.pose.trophies.trophies;
 
 import it.pose.trophies.Trophies;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
-public class Trophy {
+public class Trophy implements ConfigurationSerializable {
     private UUID uuid;
     private String name;
+    private String displayName;
     private Material material;
     private List<String> lore;
     private Integer slot;
@@ -23,71 +28,127 @@ public class Trophy {
         this.name = "Unnamed Trophy";
         this.material = Material.PAPER;
         this.lore = new ArrayList<>();
-        
+        this.slot = -1;
     }
 
-    // Serialization
+    public Trophy(UUID id, String name, String displayName, Material type, List<String> lore, int slot) {
+        this.uuid = id;
+        this.name = name;
+        this.displayName = displayName;
+        this.material = type;
+        this.lore = lore;
+        this.slot = slot;
+    }
+
+    @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("uuid", uuid.toString());
-        data.put("name", name);
-        data.put("material", material.name());
-        data.put("slot", slot);
-        data.put("lore", lore);
-        return data;
+        Map<String, Object> map = new HashMap<>();
+        map.put("uuid", uuid.toString());
+        map.put("name", name);
+        map.put("displayName", displayName);
+        map.put("material", material.name());
+        map.put("slot", slot);
+        map.put("lore", lore);
+        return map;
     }
 
-    // Deserialization
-    public static Trophy deserialize(Map<String, Object> data) {
+    public static Trophy deserialize(Map<String, Object> map) {
+        UUID uuid = UUID.fromString((String) map.get("uuid"));
+        String name = (String) map.get("name");
+        String displayName = (String) map.getOrDefault("displayName", name); // fallback for backward compatibility
+        Material material = Material.valueOf((String) map.get("material"));
+        Integer slot = (Integer) map.get("slot");
+        List<String> lore = (List<String>) map.get("lore");
+
+        return new Trophy(uuid, name, displayName, material, lore, slot);
+    }
+
+    public static Trophy fromItemStack(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return null;
+
+        ItemMeta meta = item.getItemMeta();
+        String displayName = meta.hasDisplayName() ? ChatColor.stripColor(meta.getDisplayName()) : "Unnamed Trophy";
+        String name = displayName.toLowerCase().replaceAll("[^a-z0-9_]", "_"); // fallback ID
+        Material material = item.getType();
+        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+
         Trophy trophy = new Trophy();
-        trophy.uuid = UUID.fromString((String) data.get("uuid"));
-        trophy.name = (String) data.get("name");
-        trophy.material = Material.valueOf((String) data.get("material"));
-        trophy.lore = (List<String>) data.get("lore");
+
+        NamespacedKey key = new NamespacedKey(Trophies.getInstance(), "trophy-uuid");
+        if (meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+            UUID id = UUID.fromString(meta.getPersistentDataContainer().get(key, PersistentDataType.STRING));
+            trophy.setUUID(id);
+
+        }
+
+        trophy.setUUID(UUID.randomUUID()); // or reuse UUID from persistent tags
+        trophy.setName(name);              // internal ID
+        trophy.setDisplayName(displayName);      // visible name
+        trophy.setMaterial(material);
+        trophy.setLore(lore);
+        trophy.setSlot(-1); // set manually later
+
         return trophy;
     }
 
-    // Property Setters (mark as dirty when modified)
-    public Trophy setName(String name) {
+    public ItemStack toItemStack() {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+
+        if (lore != null && !lore.isEmpty()) {
+            meta.setLore(lore.stream()
+                    .map(line -> ChatColor.translateAlternateColorCodes('&', line))
+                    .toList());
+        }
+
+        meta.addEnchant(Enchantment.INFINITY, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public void setName(String name) {
         if (!this.name.equals(name)) {
             this.name = name;
             markDirty();
         }
-        return this;
     }
 
-    public Trophy setMaterial(Material material) {
+    public void setMaterial(Material material) {
         if (this.material != material) {
             this.material = material;
             markDirty();
         }
-        return this;
     }
 
-    public Trophy setSlot(int slot) {
+    public void setSlot(int slot) {
         if (this.slot != slot) {
             this.slot = slot;
             markDirty();
         }
-        return this;
     }
 
-    public Trophy setLore(List<String> lore) {
+    public void setLore(List<String> lore) {
         if (!this.lore.equals(lore)) {
             this.lore = new ArrayList<>(lore);
             markDirty();
         }
-        return this;
     }
 
-    public Trophy addLoreLine(String line) {
-        if (lore.add(line)) {
-            markDirty();
-        }
-        return this;
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
+        markDirty();
     }
 
-    private void markDirty() {
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+        markDirty();
+    }
+
+    public void markDirty() {
         this.dirty = true;
     }
 
@@ -99,7 +160,6 @@ public class Trophy {
         this.dirty = false;
     }
 
-    // Item generation with persistent UUID
     public ItemStack createItem() {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
@@ -108,13 +168,16 @@ public class Trophy {
         NamespacedKey key = new NamespacedKey(main, "trophy-uuid");
         meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, uuid.toString());
 
-        meta.setDisplayName(name);
+        meta.setDisplayName(displayName);
         meta.setLore(lore);
+
+        meta.addEnchant(Enchantment.INFINITY, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
         item.setItemMeta(meta);
         return item;
     }
 
-    // Getters
     public UUID getUUID() {
         return uuid;
     }
@@ -133,6 +196,10 @@ public class Trophy {
 
     public Integer getSlot() {
         return slot;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
 }

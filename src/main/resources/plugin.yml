@@ -10,8 +10,8 @@ main: it.pose.trophies.Trophies
 commands:
   trophies:
     description: Manage your trophies
-    usage: /trophies [create|give|reload|delete|remove|list|modify]
-    aliases: [ trofei ]
+    usage: /trophies [admin|delete|give|help|player|reload|remove]
+    aliases: [ ]
     permission: trophies.use
     permission-message: You don't have permission to use this command!
 permissions:

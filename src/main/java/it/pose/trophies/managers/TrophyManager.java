@@ -2,55 +2,37 @@ package it.pose.trophies.managers;
 
 import it.pose.trophies.Trophies;
 import it.pose.trophies.trophies.Trophy;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.NamespacedKey;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class TrophyManager {
+
     private static final Trophies main = Trophies.getInstance();
-    private final File trophiesFile = new File(main.getDataFolder(), "trophies.yml");
+
+    private static final Map<Integer, Trophy> trophiesBySlot = new HashMap<>();
 
     public TrophyManager() {
         reloadTrophies();
-        loadTrophies();
     }
 
-    public Trophy createNewTrophy() {
-        Trophy trophy = new Trophy();
-        main.trophies.put(trophy.getUUID(), trophy);
-        return trophy;
+    public static Trophy getTrophyByName(String input) {
+        return main.trophies.get(UUID.fromString(input));
     }
 
     public Trophy getTrophy(UUID uuid) {
         return main.trophies.get(uuid);
     }
 
-    public Trophy getTrophy(ItemStack item) {
-        if (item == null || !item.hasItemMeta()) return null;
-
-        NamespacedKey key = new NamespacedKey(main, "trophy-uuid");
-        String uuidString = item.getItemMeta()
-                .getPersistentDataContainer()
-                .get(key, PersistentDataType.STRING);
-
-        if (uuidString == null) return null;
-        return getTrophy(UUID.fromString(uuidString));
-    }
-
-    public Trophy getTrophyBySlot(int slot) {
+    public static Trophy getTrophy(int slot) {
         for (Trophy trophy : main.trophies.values()) {
             if (trophy.getSlot() != null && trophy.getSlot() == slot) {
                 return trophy;
@@ -59,30 +41,11 @@ public class TrophyManager {
         return null;
     }
 
-    public Trophy getTrophy(int slot) {
+    public static Trophy getTrophyById(UUID uuid) {
         for (Trophy trophy : main.trophies.values()) {
-            if (trophy.getSlot() == slot) return trophy;
+            if (trophy.getUUID() == uuid) return trophy;
         }
         return null;
-    }
-
-    public ItemStack getTrophyItem(Trophy trophy) {
-        ItemStack item = new ItemStack(trophy.getMaterial());
-        ItemMeta meta = item.getItemMeta();
-
-        if (meta != null) {
-            String name = trophy.getName();
-            if (name != null)
-                meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-            List<String> lore = trophy.getLore();
-            if (lore != null)
-                meta.setLore(lore.stream()
-                        .map(line -> ChatColor.translateAlternateColorCodes('&', line))
-                        .collect(Collectors.toList()));
-            item.setItemMeta(meta);
-        }
-
-        return item;
     }
 
     public UUID getUUIDByName(String name) {
@@ -92,38 +55,48 @@ public class TrophyManager {
         return null;
     }
 
-    public void saveTrophies() {
-        YamlConfiguration config = new YamlConfiguration();
+    public static void saveTrophy(Trophy trophy) {
+        FileConfiguration config = ConfigManager.getTrophiesConfig();
+        String key = trophy.getUUID().toString();
 
-        // Only save dirty trophies
-        List<Trophy> toSave = main.trophies.values().stream()
-                .filter(Trophy::isDirty)
-                .peek(Trophy::clearDirtyFlag)
-                .toList();
+        config.set("trophies." + key, trophy.serialize()); // assumes Trophy implements ConfigurationSerializable
+        ConfigManager.saveTrophiesConfig();
 
-        config.set("trophies", toSave);
+        if (!trophiesBySlot.containsKey(trophy.getSlot())) trophiesBySlot.put(trophy.getSlot(), trophy);
+        if (!main.trophies.containsKey(trophy.getUUID())) main.trophies.put(trophy.getUUID(), trophy);
 
-        try {
-            config.save(trophiesFile);
-        } catch (Exception e) {
-            main.getLogger().severe("Failed to save trophies: " + e.getMessage());
-        }
+        if (trophy.isDirty()) trophy.clearDirtyFlag();
     }
 
-    @SuppressWarnings("unchecked")
-    private void loadTrophies() {
-        if (!trophiesFile.exists()) return;
+    public static void loadTrophies() {
+        main.trophies.clear();
+        trophiesBySlot.clear();
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(trophiesFile);
-        List<Map<String, Object>> trophyData =
-                (List<Map<String, Object>>) config.getList("trophies");
+        FileConfiguration config = ConfigManager.getTrophiesConfig();
 
-        if (trophyData != null) {
-            trophyData.forEach(data -> {
-                Trophy trophy = Trophy.deserialize(data);
-                main.trophies.put(trophy.getUUID(), trophy);
-            });
+        if (!config.isConfigurationSection("trophies")) return;
+
+        ConfigurationSection section = config.getConfigurationSection("trophies");
+
+        for (String key : section.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                ConfigurationSection trophyData = section.getConfigurationSection(key);
+
+                Trophy trophy = Trophy.deserialize(trophyData.getValues(false));
+
+                main.trophies.put(uuid, trophy);
+                trophiesBySlot.put(trophy.getSlot(), trophy);
+
+            } catch (Exception e) {
+                Bukkit.getLogger().warning("[Trophies] Failed to load trophy with key: " + key);
+                e.printStackTrace();
+            }
         }
+
+        checkSlotConflicts();
+
+        Bukkit.getLogger().info("[Trophies] Loaded " + main.trophies.size() + " trophies.");
     }
 
     public void awardTrophy(Player player, UUID trophyUUID) {
@@ -143,19 +116,6 @@ public class TrophyManager {
 
         player.updateInventory(); // Refresh inventory view
 
-    }
-
-    public boolean giveVerifiedTrophy(Player player, ItemStack item) {
-
-        Trophy trophy = getTrophy(item);
-
-        if (trophy != null) {
-            player.getInventory().addItem(item).values().forEach(leftover -> {
-                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
-            });
-            return true;
-        }
-        return false;
     }
 
     public void awardTrophyToHotbar(Player player, UUID trophyUUID) {
@@ -178,7 +138,46 @@ public class TrophyManager {
         }
     }
 
-    public Map<UUID, Trophy> getAllTrophies() {
+    public static void removeTrophyItemFromInventory(Player player, Trophy trophy) {
+        ItemStack target = trophy.toItemStack();
+
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item == null) continue;
+
+            if (itemsMatch(item, target)) {
+                item.setAmount(item.getAmount() - 1);
+                return;
+            }
+        }
+    }
+
+    public static void deleteTrophy(Trophy trophy) {
+        UUID id = trophy.getUUID();
+        int slot = trophy.getSlot();
+
+        main.trophies.remove(id);
+        trophiesBySlot.remove(slot);
+
+        FileConfiguration config = ConfigManager.getTrophiesConfig();
+        config.set("trophies." + id.toString(), null);
+        ConfigManager.saveTrophiesConfig();
+
+        PlayerDataManager.removeTrophyFromAllPlayers(id);
+    }
+
+    private static boolean itemsMatch(ItemStack a, ItemStack b) {
+        if (a.getType() != b.getType()) return false;
+
+        ItemMeta metaA = a.getItemMeta();
+        ItemMeta metaB = b.getItemMeta();
+
+        if (metaA == null || metaB == null) return false;
+
+        if (!Objects.equals(metaA.getDisplayName(), metaB.getDisplayName())) return false;
+        return Objects.equals(metaA.getLore(), metaB.getLore());
+    }
+
+    public static Map<UUID, Trophy> getAllTrophies() {
         return main.trophies;
     }
 
@@ -186,5 +185,32 @@ public class TrophyManager {
         File trophies = new File(Trophies.getInstance().getDataFolder(), "trophies.yml");
         FileConfiguration trophiesFile = YamlConfiguration.loadConfiguration(trophies);
         trophiesFile.options().copyDefaults(true);
+    }
+
+    public static boolean checkSlot(int slot) {
+        return (trophiesBySlot.containsKey(slot) && !((slot >= 0) && (slot <= 26)));
+    }
+
+    public static boolean isSlotOccupied(int slot, UUID exclude) {
+        return main.trophies.values().stream()
+                .anyMatch(t -> t.getSlot() == slot && !t.getUUID().equals(exclude));
+    }
+
+    private static void checkSlotConflicts() {
+        Map<Integer, List<Trophy>> slotMap = new HashMap<>();
+
+        for (Trophy trophy : main.trophies.values()) {
+            slotMap.computeIfAbsent(trophy.getSlot(), s -> new ArrayList<>()).add(trophy);
+        }
+
+        for (Map.Entry<Integer, List<Trophy>> entry : slotMap.entrySet()) {
+            List<Trophy> list = entry.getValue();
+            if (list.size() > 1) {
+                Bukkit.getLogger().warning("[Trophies] Slot conflict at slot " + entry.getKey() + ":");
+                for (Trophy trophy : list) {
+                    Bukkit.getLogger().warning(" - " + trophy.getName() + " (" + trophy.getUUID() + ")");
+                }
+            }
+        }
     }
 }

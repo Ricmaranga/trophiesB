@@ -46,10 +46,6 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
-                <includes>
-                    <include>*.yml</include>
-                    <include>plugin.yml</include>
-                </includes>
             </resource>
         </resources>
     </build>
