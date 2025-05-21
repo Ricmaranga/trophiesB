@@ -26,9 +26,10 @@ public class ShowcaseGUI implements Listener {
 
     private static final ConfigManager configManager = Trophies.getInstance().getConfigManager();
     private static final FileConfiguration config = configManager.getConfig();
+    public static int dim = 27;
 
     public static Inventory open(Player player) {
-        Inventory gui = Bukkit.createInventory(new PluginGUIHolder("trophies"), 27, Lang.get("gui.showcase-title"));
+        Inventory gui = Bukkit.createInventory(new PluginGUIHolder("trophies"), dim, Lang.get("gui.showcase-title"));
 
         for (int slot = 0; slot < 27; slot++) {
             Trophy trophy = TrophyManager.getTrophy(slot);
@@ -65,7 +66,7 @@ public class ShowcaseGUI implements Listener {
     }
 
     private static ItemStack getShadowItem(Trophy trophy) {
-        return new ButtonCreator.ButtonBuilder(Material.LIGHT_GRAY_STAINED_GLASS_PANE)
+        return new ButtonCreator.ButtonBuilder(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE))
                 .name("§7" + trophy.getName())
                 .lore("§8The trophy goes here...")
                 .onClick("place-" + trophy.getUUID(), e -> {
