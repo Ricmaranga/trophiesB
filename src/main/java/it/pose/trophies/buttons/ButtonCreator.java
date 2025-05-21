@@ -33,8 +33,8 @@ public class ButtonCreator {
         private final ItemStack item;
         private final ItemMeta meta;
 
-        public ButtonBuilder(Material material) {
-            this.item = new ItemStack(material);
+        public ButtonBuilder(ItemStack item) {
+            this.item = item;
             this.meta = item.getItemMeta();
         }
 

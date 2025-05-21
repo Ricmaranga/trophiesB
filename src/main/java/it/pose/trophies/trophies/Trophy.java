@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,7 +18,7 @@ public class Trophy implements ConfigurationSerializable {
     private UUID uuid;
     private String name;
     private String displayName;
-    private Material material;
+    private ItemStack item;
     private List<String> lore;
     private Integer slot;
     private transient boolean dirty = false;
@@ -26,16 +27,16 @@ public class Trophy implements ConfigurationSerializable {
     public Trophy() {
         this.uuid = UUID.randomUUID();
         this.name = "Unnamed Trophy";
-        this.material = Material.PAPER;
+        this.item = new ItemStack(Material.PAPER);
         this.lore = new ArrayList<>();
         this.slot = -1;
     }
 
-    public Trophy(UUID id, String name, String displayName, Material type, List<String> lore, int slot) {
+    public Trophy(UUID id, String name, String displayName, ItemStack item, List<String> lore, int slot) {
         this.uuid = id;
         this.name = name;
         this.displayName = displayName;
-        this.material = type;
+        this.item = item;
         this.lore = lore;
         this.slot = slot;
     }
@@ -46,7 +47,7 @@ public class Trophy implements ConfigurationSerializable {
         map.put("uuid", uuid.toString());
         map.put("name", name);
         map.put("displayName", displayName);
-        map.put("material", material.name());
+        map.put("item", item); // This will serialize full ItemStack including skin
         map.put("slot", slot);
         map.put("lore", lore);
         return map;
@@ -55,12 +56,12 @@ public class Trophy implements ConfigurationSerializable {
     public static Trophy deserialize(Map<String, Object> map) {
         UUID uuid = UUID.fromString((String) map.get("uuid"));
         String name = (String) map.get("name");
-        String displayName = (String) map.getOrDefault("displayName", name); // fallback for backward compatibility
-        Material material = Material.valueOf((String) map.get("material"));
-        Integer slot = (Integer) map.get("slot");
+        String displayName = (String) map.getOrDefault("displayName", name);
+        ItemStack item = (ItemStack) map.get("item"); // Full item with meta
+        int slot = (Integer) map.get("slot");
         List<String> lore = (List<String>) map.get("lore");
 
-        return new Trophy(uuid, name, displayName, material, lore, slot);
+        return new Trophy(uuid, name, displayName, item, lore, slot);
     }
 
     public static Trophy fromItemStack(ItemStack item) {
@@ -84,7 +85,7 @@ public class Trophy implements ConfigurationSerializable {
         trophy.setUUID(UUID.randomUUID()); // or reuse UUID from persistent tags
         trophy.setName(name);              // internal ID
         trophy.setDisplayName(displayName);      // visible name
-        trophy.setMaterial(material);
+        trophy.setItem(item);
         trophy.setLore(lore);
         trophy.setSlot(-1); // set manually later
 
@@ -92,7 +93,6 @@ public class Trophy implements ConfigurationSerializable {
     }
 
     public ItemStack toItemStack() {
-        ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
@@ -113,13 +113,13 @@ public class Trophy implements ConfigurationSerializable {
     public void setName(String name) {
         if (!this.name.equals(name)) {
             this.name = name;
+            this.displayName = name;
             markDirty();
         }
     }
 
-    public void setMaterial(Material material) {
-        if (this.material != material) {
-            this.material = material;
+    public void setItem(ItemStack item) {
+        if (this.item != item) {
             markDirty();
         }
     }
@@ -161,7 +161,6 @@ public class Trophy implements ConfigurationSerializable {
     }
 
     public ItemStack createItem() {
-        ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 
         // Store UUID in persistent data
@@ -186,8 +185,8 @@ public class Trophy implements ConfigurationSerializable {
         return name;
     }
 
-    public Material getMaterial() {
-        return material;
+    public ItemStack getMaterial() {
+        return item;
     }
 
     public List<String> getLore() {

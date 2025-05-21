@@ -3,6 +3,7 @@ package it.pose.trophies.managers;
 import it.pose.trophies.Trophies;
 import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -59,7 +60,8 @@ public class TrophyManager {
         FileConfiguration config = ConfigManager.getTrophiesConfig();
         String key = trophy.getUUID().toString();
 
-        config.set("trophies." + key, trophy.serialize()); // assumes Trophy implements ConfigurationSerializable
+        config.set("trophies." + key, trophy.serialize());
+
         ConfigManager.saveTrophiesConfig();
 
         if (!trophiesBySlot.containsKey(trophy.getSlot())) trophiesBySlot.put(trophy.getSlot(), trophy);
@@ -177,9 +179,7 @@ public class TrophyManager {
         return Objects.equals(metaA.getLore(), metaB.getLore());
     }
 
-    public static Map<UUID, Trophy> getAllTrophies() {
-        return main.trophies;
-    }
+    public static Map<UUID, Trophy> getAllTrophies() { return main.trophies; }
 
     public void reloadTrophies() {
         File trophies = new File(Trophies.getInstance().getDataFolder(), "trophies.yml");
@@ -187,9 +187,7 @@ public class TrophyManager {
         trophiesFile.options().copyDefaults(true);
     }
 
-    public static boolean checkSlot(int slot) {
-        return (trophiesBySlot.containsKey(slot) && !((slot >= 0) && (slot <= 26)));
-    }
+    public static boolean checkSlot(int slot) { return (trophiesBySlot.containsKey(slot) || !((slot >= 0) && (slot <= 26))); }
 
     public static boolean isSlotOccupied(int slot, UUID exclude) {
         return main.trophies.values().stream()
