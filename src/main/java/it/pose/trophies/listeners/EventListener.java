@@ -12,6 +12,7 @@ import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
 import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,10 +25,13 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -57,10 +61,24 @@ public class EventListener implements Listener {
     public void onInventoryClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
 
-        InventoryHolder holder = e.getInventory().getHolder();
+        Inventory inv = e.getInventory();
+
+        InventoryHolder holder = inv.getHolder();
         if (!(holder instanceof PluginGUIHolder)) return;
 
         e.setCancelled(true);
+
+        if (player.hasPermission("trophies.admin") && (e.getRawSlot() >= 27 && e.getRawSlot() <= 62) && e.getView().getTitle().equals(Lang.get("gui.create-title"))) {
+            ItemStack clicked = e.getCurrentItem();
+            UUID id = TrophyManager.getUUIDFromItem(clicked);
+
+            if (id != null) {
+                Trophy trophy = Trophies.getInstance().trophies.get(id);
+                if (trophy != null) {
+                    trophy.setItem(clicked);
+                }
+            }
+        }
 
         String id = ButtonRegistry.getId(e.getCurrentItem());
         if (id == null) return;

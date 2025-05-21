@@ -70,7 +70,6 @@ public class Trophy implements ConfigurationSerializable {
         ItemMeta meta = item.getItemMeta();
         String displayName = meta.hasDisplayName() ? ChatColor.stripColor(meta.getDisplayName()) : "Unnamed Trophy";
         String name = displayName.toLowerCase().replaceAll("[^a-z0-9_]", "_"); // fallback ID
-        Material material = item.getType();
         List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
 
         Trophy trophy = new Trophy();
@@ -79,7 +78,8 @@ public class Trophy implements ConfigurationSerializable {
         if (meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
             UUID id = UUID.fromString(meta.getPersistentDataContainer().get(key, PersistentDataType.STRING));
             trophy.setUUID(id);
-
+        } else {
+            trophy.setUUID(UUID.randomUUID());
         }
 
         trophy.setUUID(UUID.randomUUID()); // or reuse UUID from persistent tags
@@ -119,7 +119,8 @@ public class Trophy implements ConfigurationSerializable {
     }
 
     public void setItem(ItemStack item) {
-        if (this.item != item) {
+        if (!Objects.equals(this.item, item)) {
+            this.item = item.clone(); // clone to prevent reference issues
             markDirty();
         }
     }

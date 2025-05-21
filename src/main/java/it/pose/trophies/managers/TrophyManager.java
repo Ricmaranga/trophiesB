@@ -4,6 +4,7 @@ import it.pose.trophies.Trophies;
 import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
 import java.util.*;
@@ -70,6 +72,24 @@ public class TrophyManager {
         if (trophy.isDirty()) trophy.clearDirtyFlag();
     }
 
+    public static UUID getUUIDFromItem(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return null;
+
+        ItemMeta meta = item.getItemMeta();
+        NamespacedKey key = new NamespacedKey(Trophies.getInstance(), "trophy-uuid");
+
+        if (meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+            try {
+                return UUID.fromString(meta.getPersistentDataContainer().get(key, PersistentDataType.STRING));
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+
     public static void loadTrophies() {
         main.trophies.clear();
         trophiesBySlot.clear();
@@ -116,7 +136,7 @@ public class TrophyManager {
             player.sendMessage("§aYou received the §e" + trophy.getName() + "§a trophy!");
         }
 
-        player.updateInventory(); // Refresh inventory view
+        player.updateInventory();
 
     }
 
