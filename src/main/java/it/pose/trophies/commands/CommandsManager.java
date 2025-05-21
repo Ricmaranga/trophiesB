@@ -82,7 +82,7 @@ public class CommandsManager implements CommandExecutor, TabExecutor {
         if (args.length == 3) {
             switch (args[0]) {
                 case "give":
-                    return List.of(TrophyManager.getAllTrophies().toString());
+                    return Trophies.getInstance().trophies.isEmpty() ? List.of(TrophyManager.getAllTrophies().toString()) : null;
                 case "player":
                     return List.of("purge", "remove");
             }
