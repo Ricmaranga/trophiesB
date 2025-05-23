@@ -5,29 +5,41 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ChatInputRegistry {
-    private static final Map<UUID, Consumer<String>> listeners = new HashMap<>();
 
-    public static void waitFor(Player player, Consumer<String> callback) {
-        listeners.put(player.getUniqueId(), callback);
-        player.sendMessage(ChatColor.YELLOW + "✏️ " + Lang.get("player.input.lore"));
-        player.sendMessage(ChatColor.GRAY + Lang.get("player.input.cancel"));
+    private static class Pending {
+        final String prompt;
+        final Consumer<String> callback;
+
+        Pending(String prompt, Consumer<String> cb) {
+            this.prompt = prompt;
+            this.callback = cb;
+        }
+    }
+
+    private static final Map<UUID, Pending> listeners = new HashMap<>();
+
+    public static void waitFor(Player player, List<String> prompts, Consumer<String> callback) {
+        for (String prompt : prompts) {
+            listeners.put(player.getUniqueId(), new Pending(prompt, callback));
+            player.sendMessage(ChatColor.YELLOW + Lang.get("player.input." + prompt));
+        }
+        player.sendMessage(ChatColor.GRAY + "Type 'cancel' to cancel the input");
     }
 
     public static void handle(Player player, String message) {
-        UUID uuid = player.getUniqueId();
-        Consumer<String> callback = listeners.remove(uuid);
-
-        if (callback == null) return;
+        Pending p = listeners.remove(player.getUniqueId());
+        if (p == null) return;
 
         if (message.equalsIgnoreCase("cancel")) {
-            player.sendMessage(ChatColor.RED + Lang.get("player.input.canceled"));
+            player.sendMessage(ChatColor.RED + "Input canceled.");    // you could also parameterize this
         } else {
-            callback.accept(message);
+            p.callback.accept(message);
         }
     }
 
