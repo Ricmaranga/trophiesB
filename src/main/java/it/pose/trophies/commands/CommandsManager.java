@@ -36,7 +36,11 @@ public class CommandsManager implements CommandExecutor, TabExecutor {
         if (sender instanceof Player player) {
 
             if (args.length == 0) {
-                player.openInventory(ShowcaseGUI.open(player));
+                try {
+                    player.openInventory(ShowcaseGUI.open(player));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 return true;
             }
 
@@ -59,12 +63,6 @@ public class CommandsManager implements CommandExecutor, TabExecutor {
         return true;
     }
 
-
-    public ArrayList<SubCommand> getSubcommand() {
-        return subcommand;
-    }
-
-
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("trophies.admin")) return null;
@@ -82,7 +80,7 @@ public class CommandsManager implements CommandExecutor, TabExecutor {
         if (args.length == 3) {
             switch (args[0]) {
                 case "give":
-                    return Trophies.getInstance().trophies.isEmpty() ? List.of(TrophyManager.getAllTrophies().toString()) : null;
+                    return List.of(Trophies.trophies.values().stream().map(Trophy::getName).toArray(String[]::new));
                 case "player":
                     return List.of("purge", "remove");
             }

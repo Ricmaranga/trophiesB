@@ -21,7 +21,7 @@ public class Trophies extends JavaPlugin {
     private TrophyManager trophyManager;
     private PlayerDataManager playerDataManager;
 
-    public Map<UUID, Trophy> trophies = new HashMap<>();
+    public static Map<UUID, Trophy> trophies = new HashMap<>();
 
     public String defaultTitle = "Trophies Showcase";
 
@@ -44,7 +44,7 @@ public class Trophies extends JavaPlugin {
         configManager.reloadConfig();
         trophyManager.reloadTrophies();
 
-        ConfigManager.init(this); // 💡 Initializes trophies.yml and other files
+        ConfigManager.init(this);
         TrophyManager.loadTrophies();
 
         trophies = TrophyManager.getAllTrophies();
@@ -87,4 +87,5 @@ public class Trophies extends JavaPlugin {
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
     }
+
 }

@@ -1,12 +1,12 @@
 package it.pose.trophies.trophies;
 
+import it.pose.trophies.ItemSerialization;
 import it.pose.trophies.Trophies;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,26 +41,50 @@ public class Trophy implements ConfigurationSerializable {
         this.slot = slot;
     }
 
+
     @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         map.put("uuid", uuid.toString());
         map.put("name", name);
         map.put("displayName", displayName);
-        map.put("item", item); // This will serialize full ItemStack including skin
+
+        // *** branch here: if it’s a player head, Base64-serialize ***
+        if (item.getType() == Material.PLAYER_HEAD) {
+            try {
+                String b64 = ItemSerialization.itemStackToBase64(item);
+                map.put("itemBase64", b64);
+            } catch (Exception ex) {
+                throw new IllegalStateException("Unable to serialize trophy head", ex);
+            }
+        } else {
+            map.put("item", item);
+        }
+
         map.put("slot", slot);
         map.put("lore", lore);
         return map;
     }
 
+    @SuppressWarnings("unchecked")
     public static Trophy deserialize(Map<String, Object> map) {
         UUID uuid = UUID.fromString((String) map.get("uuid"));
         String name = (String) map.get("name");
         String displayName = (String) map.getOrDefault("displayName", name);
-        ItemStack item = (ItemStack) map.get("item"); // Full item with meta
-        int slot = (Integer) map.get("slot");
-        List<String> lore = (List<String>) map.get("lore");
 
+        ItemStack item;
+        if (map.containsKey("itemBase64")) {
+            try {
+                item = ItemSerialization.itemStackFromBase64((String) map.get("itemBase64"));
+            } catch (Exception ex) {
+                throw new IllegalStateException("Unable to deserialize trophy head", ex);
+            }
+        } else {
+            item = (ItemStack) map.get("item");
+        }
+
+        int slot = (Integer) map.get("slot");
+        List<String> lore = (List<String>) map.getOrDefault("lore", new ArrayList<>());
         return new Trophy(uuid, name, displayName, item, lore, slot);
     }
 
@@ -69,7 +93,7 @@ public class Trophy implements ConfigurationSerializable {
 
         ItemMeta meta = item.getItemMeta();
         String displayName = meta.hasDisplayName() ? ChatColor.stripColor(meta.getDisplayName()) : "Unnamed Trophy";
-        String name = displayName.toLowerCase().replaceAll("[^a-z0-9_]", "_"); // fallback ID
+        String name = displayName.toLowerCase().replaceAll("[^a-z0-9_]", "_");
         List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
 
         Trophy trophy = new Trophy();
@@ -82,12 +106,12 @@ public class Trophy implements ConfigurationSerializable {
             trophy.setUUID(UUID.randomUUID());
         }
 
-        trophy.setUUID(UUID.randomUUID()); // or reuse UUID from persistent tags
-        trophy.setName(name);              // internal ID
-        trophy.setDisplayName(displayName);      // visible name
+        trophy.setUUID(UUID.randomUUID());
+        trophy.setName(name);
+        trophy.setDisplayName(displayName);
         trophy.setItem(item);
         trophy.setLore(lore);
-        trophy.setSlot(-1); // set manually later
+        trophy.setSlot(-1);
 
         return trophy;
     }
@@ -96,6 +120,7 @@ public class Trophy implements ConfigurationSerializable {
         ItemMeta meta = item.getItemMeta();
 
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+        meta.setLore(this.lore);
 
         if (lore != null && !lore.isEmpty()) {
             meta.setLore(lore.stream()

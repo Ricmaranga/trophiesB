@@ -1,5 +1,6 @@
 package it.pose.trophies.buttons;
 
+import it.pose.trophies.ItemSerialization;
 import it.pose.trophies.Lang;
 import it.pose.trophies.Trophies;
 import it.pose.trophies.gui.AdminGUI;
@@ -12,9 +13,7 @@ import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.Map;
@@ -48,14 +47,17 @@ public class Buttons {
                 .onClick("createTrophy", e -> {
                     e.player.closeInventory();
                     Trophy trophy = new Trophy();
-                    ChatInputRegistry.waitFor(e.player, input -> {
-                        trophy.setName(ChatColor.translateAlternateColorCodes('&', input));
-                        e.player.sendMessage(trophy.toString());
-                        e.player.sendMessage(trophy.getDisplayName());
-                        e.player.sendMessage(ChatColor.GREEN + "Trophy name set to: " + input);
-                        e.player.openInventory(TrophyGUI.open(trophy));
-                        TrophyManager.saveTrophy(trophy);
-                    });
+                    ChatInputRegistry.waitFor(
+                            e.player,
+                            List.of("id"),
+                            input -> {
+                                trophy.setName(ChatColor.translateAlternateColorCodes('&', input));
+                                e.player.sendMessage(trophy.toString());
+                                e.player.sendMessage(trophy.getDisplayName());
+                                e.player.sendMessage(ChatColor.GREEN + "Trophy name set to: " + input);
+                                e.player.openInventory(TrophyGUI.open(trophy));
+                                TrophyManager.saveTrophy(trophy);
+                            });
                 })
                 .build();
     }
@@ -76,12 +78,15 @@ public class Buttons {
                 .lore("§bCurrently set to: §c" + trophy.getDisplayName())
                 .onClick("setName", e -> {
                     e.player.closeInventory();
-                    ChatInputRegistry.waitFor(e.player, input -> {
-                        trophy.setDisplayName(ChatColor.translateAlternateColorCodes('&', input));
-                        trophy.markDirty();
-                        e.player.sendMessage(Lang.prefix() + Lang.get("trophy.set-name", Map.of("name", ChatColor.translateAlternateColorCodes('&', input))));
-                        Bukkit.getScheduler().runTask(Trophies.getInstance(), () -> e.player.openInventory(TrophyGUI.open(trophy)));
-                    });
+                    ChatInputRegistry.waitFor(
+                            e.player,
+                            List.of("name"),
+                            input -> {
+                                trophy.setDisplayName(ChatColor.translateAlternateColorCodes('&', input));
+                                trophy.markDirty();
+                                e.player.sendMessage(Lang.prefix() + Lang.get("trophy.set-name", Map.of("name", ChatColor.translateAlternateColorCodes('&', input))));
+                                Bukkit.getScheduler().runTask(Trophies.getInstance(), () -> e.player.openInventory(TrophyGUI.open(trophy)));
+                            });
                 })
                 .build();
     }
@@ -92,22 +97,27 @@ public class Buttons {
                 .lore("§bCurrently set to: §c" + trophy.getSlot())
                 .onClick("setSlot", e -> {
                     e.player.closeInventory();
-                    ChatInputRegistry.waitFor(e.player, input -> {
-                        try {
-                            int slot = Integer.parseInt(input);
-                            if (TrophyManager.checkSlot(slot)) {
-                                e.player.sendMessage("§4The slot §b§l" + slot + " §4is already in use or is not valid");
-                            } else {
-                                trophy.setSlot(slot);
-                                e.player.sendMessage(ChatColor.GREEN + "Trophy slot set to: " + input);
-                                TrophyManager.saveTrophy(trophy);
-                            }
-                        } catch (NumberFormatException ex) {
-                            e.player.sendMessage("Number not valid");
-                            e.player.openInventory(TrophyGUI.open(trophy));
-                        }
-                        Bukkit.getScheduler().runTask(Trophies.getInstance(), () -> e.player.openInventory(TrophyGUI.open(trophy)));
-                    });
+                    ChatInputRegistry.waitFor(
+                            e.player,
+                            List.of("slot"),
+                            input -> {
+                                try {
+                                    int slot = Integer.parseInt(input);
+                                    if (TrophyManager.checkSlot(slot)) {
+                                        e.player.sendMessage("§cThe slot §d§l" + slot + " §cis already in use or is not valid");
+                                        e.player.sendMessage(Lang.prefix() + Lang.get("trophy.slot-invalid", Map.of("slot", ChatColor.translateAlternateColorCodes('&', input))));
+                                    } else {
+                                        trophy.setSlot(slot);
+                                        e.player.sendMessage(ChatColor.GREEN + "Trophy slot set to: " + ChatColor.DARK_AQUA + input);
+                                        e.player.sendMessage(Lang.prefix() + Lang.get("trophy.slot-set", Map.of("input", ChatColor.translateAlternateColorCodes('&', input))));
+                                        TrophyManager.saveTrophy(trophy);
+                                    }
+                                } catch (NumberFormatException ex) {
+                                    e.player.sendMessage("Number not valid");
+                                    e.player.openInventory(TrophyGUI.open(trophy));
+                                }
+                                Bukkit.getScheduler().runTask(Trophies.getInstance(), () -> e.player.openInventory(TrophyGUI.open(trophy)));
+                            });
                 })
                 .build();
     }
@@ -123,7 +133,21 @@ public class Buttons {
                         return;
                     }
 
-                    trophy.setItem(cursor.clone());
+                    ItemStack raw = cursor.clone();     // <— keeps the head’s texture
+                    trophy.setItem(raw);
+
+                    String serialized;
+                    try {
+                        serialized = ItemSerialization.itemStackToBase64(raw);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    Trophies.getInstance()
+                            .getConfigManager()
+                            .getConfig()
+                            .set("trophies." + trophy.getUUID() + ".item", serialized);
+
+
                     TrophyManager.saveTrophy(trophy);
 
                     e.player.sendMessage("§aMaterial updated to §f" + cursor.getType().name());
@@ -136,7 +160,7 @@ public class Buttons {
     }
 
     public static ItemStack goBack() {
-        return new ButtonCreator.ButtonBuilder(new ItemStack(Material.GOAT_HORN))
+        return new ButtonCreator.ButtonBuilder(new ItemStack(Material.BLAZE_ROD))
                 .name("§dGo back")
                 .onClick("goBack", e -> {
                     e.player.closeInventory();
@@ -154,16 +178,6 @@ public class Buttons {
                     TrophyManager.deleteTrophy(trophy);
                     e.player.sendMessage(Lang.get("trophy.deleted"));
                     e.player.closeInventory();
-                })
-                .build();
-    }
-
-    public static ItemStack manageTrohpy(Trophy trophy) {
-        return new ButtonCreator.ButtonBuilder(new ItemStack(Material.BAMBOO))
-                .name("buttons.manage")
-                .onClick("manage-" + trophy.getUUID(), e -> {
-                    e.player.sendMessage("Ciao (Buttons, 166)");
-                    e.player.openInventory(TrophyGUI.open(trophy));
                 })
                 .build();
     }

@@ -5,27 +5,23 @@ import it.pose.trophies.Lang;
 import it.pose.trophies.PluginGUIHolder;
 import it.pose.trophies.Trophies;
 import it.pose.trophies.buttons.ButtonCreator;
-import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
 import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import static it.pose.trophies.managers.TrophyManager.removeTrophyItemFromInventory;
+import java.util.Collections;
 
 public class ShowcaseGUI implements Listener {
 
-    private static final ConfigManager configManager = Trophies.getInstance().getConfigManager();
-    private static final FileConfiguration config = configManager.getConfig();
     public static int dim = 27;
 
     public static Inventory open(Player player) {
@@ -41,12 +37,27 @@ public class ShowcaseGUI implements Listener {
             if (!PlayerDataManager.hasUnlocked(player, trophy)) {
                 gui.setItem(slot, getLockedItem(slot));
             } else if (PlayerDataManager.hasPlaced(player, trophy)) {
-                gui.setItem(slot, trophy.toItemStack());
+                ItemStack plain = trophy.toItemStack();
+                ItemMeta meta = plain.getItemMeta();
+                NamespacedKey key = new NamespacedKey(Trophies.getInstance(), "button-id");
+                meta.getPersistentDataContainer().remove(key);
+                plain.setItemMeta(meta);
+                gui.setItem(slot, plain);
             } else {
-                gui.setItem(slot, getShadowItem(trophy));
+                ItemStack needed = trophy.toItemStack();
+                if (player.getInventory().containsAtLeast(needed, 1)) {
+                    gui.setItem(slot, placeTrophy(trophy));
+                } else {
+                    ItemStack greyPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+                    ItemMeta meta = greyPane.getItemMeta();
+                    meta.setDisplayName("§7" + trophy.getName());
+                    meta.setLore(Collections.singletonList("§8You don’t have this trophy"));
+                    greyPane.setItemMeta(meta);
+
+                    gui.setItem(slot, greyPane);
+                }
             }
         }
-
         return gui;
     }
 
@@ -65,49 +76,28 @@ public class ShowcaseGUI implements Listener {
         return item;
     }
 
-    private static ItemStack getShadowItem(Trophy trophy) {
+    private static ItemStack placeTrophy(Trophy trophy) {
         return new ButtonCreator.ButtonBuilder(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE))
                 .name("§7" + trophy.getName())
                 .lore("§8The trophy goes here...")
                 .onClick("place-" + trophy.getUUID(), e -> {
                     Player player = e.player;
 
+                    ItemStack needed = trophy.toItemStack();
+                    if (!player.getInventory().containsAtLeast(needed, 1)) {
+                        player.sendMessage("§cYou need to have the trophy item in your inventory to place it!");
+                        return;
+                    }
+
                     if (PlayerDataManager.hasPlaced(player, trophy)) return;
 
+                    player.getInventory().removeItem(needed);
                     PlayerDataManager.markPlaced(player, trophy);
+
                     player.closeInventory();
-                    player.sendMessage("§aTrophy placed!");
-                    removeTrophyItemFromInventory(player, trophy);
+                    player.sendMessage("§aTrophy placed in your showcase!");
                     player.openInventory(ShowcaseGUI.open(player));
                 })
                 .build();
     }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player player)) return;
-        if (!e.getView().getTitle().equals(Lang.get("gui.showcase-title"))) return;
-
-        e.setCancelled(true);
-
-        int slot = e.getRawSlot();
-        Trophy trophy = TrophyManager.getTrophy(slot);
-        if (trophy == null) return;
-
-        if (!PlayerDataManager.hasUnlocked(player, trophy)) {
-            player.sendMessage("§cYou haven't unlocked this trophy yet.");
-            return;
-        }
-
-        if (PlayerDataManager.hasPlaced(player, trophy)) {
-            player.sendMessage("§eThis trophy is already placed.");
-            return;
-        }
-
-        PlayerDataManager.markPlaced(player, trophy);
-        player.closeInventory();
-        player.sendMessage("§aTrophy placed in your showcase!");
-        player.openInventory(open(player));
-    }
-
 }
