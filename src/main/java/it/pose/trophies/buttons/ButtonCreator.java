@@ -15,9 +15,6 @@ import java.util.function.Consumer;
 
 public class ButtonCreator {
 
-    private ButtonCreator() {
-    }
-
     public static class ButtonBuilder {
         private final ItemStack item;
         private final ItemMeta meta;
@@ -54,7 +51,7 @@ public class ButtonCreator {
         }
 
         public ItemStack buildTrophy() {
-            meta.addEnchant(Enchantment.INFINITY, 1, true);
+            meta.addEnchant(Enchantment.LOYALTY, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             item.setItemMeta(meta);
             return item;
