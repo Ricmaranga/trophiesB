@@ -128,7 +128,7 @@ public class Trophy implements ConfigurationSerializable {
                     .toList());
         }
 
-        meta.addEnchant(Enchantment.INFINITY, 1, true);
+        meta.addEnchant(Enchantment.LOYALTY, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
         item.setItemMeta(meta);
@@ -196,7 +196,7 @@ public class Trophy implements ConfigurationSerializable {
         meta.setDisplayName(displayName);
         meta.setLore(lore);
 
-        meta.addEnchant(Enchantment.INFINITY, 1, true);
+        meta.addEnchant(Enchantment.LOYALTY, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
         item.setItemMeta(meta);
