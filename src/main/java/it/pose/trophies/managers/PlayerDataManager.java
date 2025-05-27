@@ -16,12 +16,12 @@ import java.util.UUID;
 
 public class PlayerDataManager {
 
-    private static final Map<UUID, Map<UUID, Boolean>> playerTrophies = new HashMap<>();
+    private static final Map<UUID, Map<UUID, Boolean>> playersTrophies = new HashMap<>();
 
 
     public static void savePlayerData(Player player) {
         UUID playerId = player.getUniqueId();
-        Map<UUID, Boolean> trophies = playerTrophies.get(playerId);
+        Map<UUID, Boolean> trophies = playersTrophies.get(playerId);
         if (trophies == null) return;
 
         File folder = new File(Trophies.getInstance().getDataFolder(), "playerData");
@@ -62,7 +62,7 @@ public class PlayerDataManager {
     }
 
     public static void loadAll() {
-        playerTrophies.clear();
+        playersTrophies.clear();
 
         File folder = new File(Trophies.getInstance().getDataFolder(), "playerData");
         if (!folder.exists()) {
@@ -98,26 +98,25 @@ public class PlayerDataManager {
                 }
             }
 
-            playerTrophies.put(playerId, trophies);
+            playersTrophies.put(playerId, trophies);
         }
 
-        Bukkit.getLogger().info("[Trophies] Loaded data for " + playerTrophies.size() + " players.");
+        Bukkit.getLogger().info("[Trophies] Loaded data for " + playersTrophies.size() + " players.");
     }
 
     public static void saveAll() {
-        for (UUID playerId : playerTrophies.keySet()) {
+        for (UUID playerId : playersTrophies.keySet()) {
             Player player = Bukkit.getPlayer(playerId);
             if (player != null) {
                 savePlayerData(player);
             } else {
-                // still save offline player's cached data
-                savePlayerData(playerId, playerTrophies.get(playerId));
+                savePlayerData(playerId, playersTrophies.get(playerId));
             }
         }
     }
 
     public static Map<UUID, Boolean> getTrophies(Player player) {
-        return playerTrophies.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>());
+        return playersTrophies.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>());
     }
 
     public void loadPlayer(UUID uuid) {
@@ -140,7 +139,7 @@ public class PlayerDataManager {
             }
         }
 
-        playerTrophies.put(uuid, trophies);
+        playersTrophies.put(uuid, trophies);
     }
 
 
@@ -168,20 +167,20 @@ public class PlayerDataManager {
     }
 
     public static void removeTrophyFromAllPlayers(UUID trophyId) {
-        for (Map.Entry<UUID, Map<UUID, Boolean>> entry : playerTrophies.entrySet()) {
+        for (Map.Entry<UUID, Map<UUID, Boolean>> entry : playersTrophies.entrySet()) {
             entry.getValue().remove(trophyId);
             savePlayerData(entry.getKey(), entry.getValue());
         }
     }
 
     public static void removeTrophy(String player, Trophy trophy) {
-        if (playerTrophies.containsKey(Bukkit.getPlayer(player).getUniqueId())) {
+        if (playersTrophies.containsKey(Bukkit.getPlayer(player).getUniqueId())) {
             getTrophies(Bukkit.getPlayer(player)).remove(trophy.getUUID());
-            playerTrophies.get(Bukkit.getPlayer(player).getUniqueId()).remove(trophy.getUUID());
+            playersTrophies.get(Bukkit.getPlayer(player).getUniqueId()).remove(trophy.getUUID());
         }
     }
 
-    public static Map<UUID, Map<UUID, Boolean>> getPlayerTrophies() {
-        return playerTrophies;
+    public static Map<UUID, Map<UUID, Boolean>> getPlayersTrophies() {
+        return playersTrophies;
     }
 }

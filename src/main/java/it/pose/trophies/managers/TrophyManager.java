@@ -26,7 +26,12 @@ public class TrophyManager {
     }
 
     public static Trophy getTrophyByName(String input) {
-        return Trophies.trophies.get(UUID.fromString(input));
+        for (Trophy trophy : getAllTrophies().values()) {
+            if (Objects.equals(trophy.getName(), input)) {
+                return Trophies.trophies.get(trophy.getUUID());
+            }
+        }
+        return null;
     }
 
     public static Trophy getTrophy(UUID uuid) {

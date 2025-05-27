@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class CommandsManager implements CommandExecutor, TabExecutor {
 
@@ -81,15 +82,28 @@ public class CommandsManager implements CommandExecutor, TabExecutor {
         }
 
         if (args.length == 3) {
-            return switch (args[0]) {
-                case "give" -> List.of(Trophies.trophies.values().stream().map(Trophy::getName).toArray(String[]::new));
-                case "remove" -> PlayerDataManager.getTrophies(Bukkit.getPlayer(args[1]))
-                        .keySet().stream()
-                        .map(TrophyManager::getTrophy)
-                        .map(Trophy::getName)
-                        .toList();
-                default -> Collections.singletonList("");
-            };
+            switch (args[0]) {
+                case "give" -> {
+                    return List.of(Trophies.trophies.values().stream().map(Trophy::getName).toArray(String[]::new));
+                }
+
+                case "remove" -> {
+                    Player target = Bukkit.getPlayerExact(args[1]);
+                    if (target == null) {
+                        return Collections.emptyList();
+                    }
+                    return List.of(PlayerDataManager.getTrophies(target)
+                            .keySet().stream()
+                            .map(TrophyManager::getTrophy)
+                            .filter(Objects::nonNull).map(Trophy::getName)
+                            .distinct().toArray(String[]::new));
+                }
+
+                default -> {
+                    return Collections.emptyList();
+                }
+
+            }
         }
 
         return null;

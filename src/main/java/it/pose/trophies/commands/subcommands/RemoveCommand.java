@@ -27,12 +27,17 @@ public class RemoveCommand extends SubCommand {
 
     @Override
     public void perform(Player player, String[] args) {
-        if (args.length < 2) {
-            player.sendMessage("§cUsage: /trophies remove <player> <id|name>");
+        if (args.length < 3) {
+            player.sendMessage("§cUsage: /trophies remove <player> <name>");
             return;
         }
 
-        PlayerDataManager.removeTrophy(args[1], TrophyManager.getTrophyByName(args[2]));
-        player.sendMessage(Lang.get("command.remove", Map.of("player", args[2])));
+        if (TrophyManager.getTrophyByName(args[2]) != null) {
+            PlayerDataManager.removeTrophy(args[1], TrophyManager.getTrophyByName(args[2]));
+            player.sendMessage(Lang.get("command.remove", Map.of("trophy", args[2], "player", args[1])));
+        } else {
+            player.sendMessage(Lang.get("trophy.inexistent", Map.of("trophy", args[2])));
+        }
     }
+
 }

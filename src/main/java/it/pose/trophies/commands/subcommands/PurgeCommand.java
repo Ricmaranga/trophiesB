@@ -31,7 +31,7 @@ public class PurgeCommand extends SubCommand {
         File playerData = new File(Trophies.getInstance().getDataFolder(), "playerData/" + Bukkit.getOfflinePlayer(args[1]).getUniqueId() + ".yml");
         if (playerData.exists()) {
             playerData.delete();
-            PlayerDataManager.getPlayerTrophies().remove(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
+            PlayerDataManager.getPlayersTrophies().remove(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
         }
         player.sendMessage(Lang.get("command.purge", Map.of("player", args[1])));
     }
