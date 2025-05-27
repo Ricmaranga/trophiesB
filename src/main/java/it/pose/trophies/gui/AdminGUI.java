@@ -13,22 +13,18 @@ public class AdminGUI {
     private static final String[] color = {"RED", "BLUE", "GREEN", "LIME", "ORANGE", "PINK", "GRAY", "LIGHT_BLUE", "MAGENTA", "PURPLE"};
     private static final ItemStack glassPanel = new ItemStack(Material.valueOf(color[(int) (Math.random() * color.length)] + "_STAINED_GLASS_PANE"));
 
-    private static final String title = Lang.get("gui.admin-title");
-
     public static Inventory open() {
 
         int slots = 3 * 9;
 
-        Inventory inv = Bukkit.createInventory(new PluginGUIHolder("trophies"), slots, title);
+        Inventory inv = Bukkit.createInventory(new PluginGUIHolder("trophies"), slots, Lang.get("gui.admin-title"));
 
         for (int slot = 0; slot < slots; slot++) {
             if (slot <= 9 || slot >= 17)
                 inv.setItem(slot, glassPanel);
-            if (slot == 11) inv.setItem(slot, Buttons.createTrophy());
-            if (slot == 13) inv.setItem(slot, Buttons.listAllTrophies());
+            if (slot == 12) inv.setItem(slot, Buttons.createTrophy());
+            if (slot == 14) inv.setItem(slot, Buttons.listAllTrophies());
             if (slot == 18) inv.setItem(slot, Buttons.closeButton());
-            if (slot == 24) inv.setItem(slot, Buttons.previousPage());
-            if (slot == 26) inv.setItem(slot, Buttons.nextPage());
         }
 
         return inv;

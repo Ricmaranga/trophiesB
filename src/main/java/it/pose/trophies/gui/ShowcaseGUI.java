@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Collections;
+import java.util.Map;
 
 public class ShowcaseGUI implements Listener {
 
@@ -78,7 +79,7 @@ public class ShowcaseGUI implements Listener {
 
     private static ItemStack placeTrophy(Trophy trophy) {
         return new ButtonCreator.ButtonBuilder(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE))
-                .name("§7" + trophy.getName())
+                .name("§7" + trophy.getDisplayName())
                 .lore("§8The trophy goes here...")
                 .onClick("place-" + trophy.getUUID(), e -> {
                     Player player = e.player;
@@ -95,7 +96,7 @@ public class ShowcaseGUI implements Listener {
                     PlayerDataManager.markPlaced(player, trophy);
 
                     player.closeInventory();
-                    player.sendMessage("§aTrophy placed in your showcase!");
+                    player.sendMessage(Lang.get("trophy.placed", Map.of("trophy", trophy.getName())));
                     player.openInventory(ShowcaseGUI.open(player));
                 })
                 .build();

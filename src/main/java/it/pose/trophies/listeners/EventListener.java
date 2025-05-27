@@ -7,20 +7,16 @@ import it.pose.trophies.buttons.ButtonClickContext;
 import it.pose.trophies.buttons.ButtonRegistry;
 import it.pose.trophies.gui.TrophyGUI;
 import it.pose.trophies.inputs.ChatInputRegistry;
-import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
 import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -28,10 +24,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -39,8 +33,6 @@ import java.util.function.Consumer;
 public class EventListener implements Listener {
 
     private final Trophies main = Trophies.getInstance();
-    private final ConfigManager configManager = main.getConfigManager();
-    private final FileConfiguration config = configManager.getConfig();
     private final PlayerDataManager dataManager = main.getPlayerDataManager();
     public static final Set<UUID> finalizingTrophies = new HashSet<>();
 
@@ -69,11 +61,12 @@ public class EventListener implements Listener {
         e.setCancelled(true);
 
         if (player.hasPermission("trophies.admin") && (e.getRawSlot() >= 27 && e.getRawSlot() <= 62) && e.getView().getTitle().equals(Lang.get("gui.create-title"))) {
+            e.setCancelled(false);
             ItemStack clicked = e.getCurrentItem();
             UUID id = TrophyManager.getUUIDFromItem(clicked);
 
             if (id != null) {
-                Trophy trophy = Trophies.getInstance().trophies.get(id);
+                Trophy trophy = Trophies.trophies.get(id);
                 if (trophy != null) {
                     trophy.setItem(clicked);
                 }
@@ -86,13 +79,6 @@ public class EventListener implements Listener {
         Consumer<ButtonClickContext> handler = ButtonRegistry.getAction(id);
         if (handler != null) {
             handler.accept(new ButtonClickContext(player, e));
-        }
-    }
-
-    @EventHandler
-    public void onInventoryDrag(InventoryDragEvent e) {
-        if (e.getView().getTitle().equals(config.getString("showcase-title", main.defaultTitle))) {
-            e.setCancelled(true);
         }
     }
 
@@ -144,7 +130,7 @@ public class EventListener implements Listener {
         int slot = trophy.getSlot();
 
         if (slot < 0 || slot > 26) {
-            player.sendMessage(Lang.get("trophy.invalid-slot"));
+            player.sendMessage(Lang.get("trophy.invalidSlot"));
             Bukkit.getScheduler().runTaskLater(Trophies.getInstance(), () ->
                     player.openInventory(TrophyGUI.open(trophy)), 1L);
             return;

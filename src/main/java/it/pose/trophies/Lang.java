@@ -67,7 +67,6 @@ public class Lang {
     }
 
     public static void reload() {
-        JavaPlugin plugin = Trophies.getInstance();
-        init(plugin);
+        init(Trophies.getInstance());
     }
 }

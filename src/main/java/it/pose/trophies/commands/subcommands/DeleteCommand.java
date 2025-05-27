@@ -2,6 +2,7 @@ package it.pose.trophies.commands.subcommands;
 
 import it.pose.trophies.Lang;
 import it.pose.trophies.commands.SubCommand;
+import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
 import it.pose.trophies.trophies.Trophy;
 import org.bukkit.entity.Player;
@@ -22,7 +23,7 @@ public class DeleteCommand extends SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/trophies delete <id|name>";
+        return Lang.get("usage") + " /" + Lang.get("default-command") + "delete <id|name>";
     }
 
     @Override
@@ -33,11 +34,11 @@ public class DeleteCommand extends SubCommand {
         }
 
         String input = args[1];
-        Trophy trophy = null;
+        Trophy trophy;
 
         try {
             UUID uuid = UUID.fromString(input);
-            trophy = TrophyManager.getTrophyById(uuid);
+            trophy = TrophyManager.getTrophy(uuid);
         } catch (IllegalArgumentException ignored) {
             trophy = TrophyManager.getTrophyByName(input);
         }
@@ -48,7 +49,8 @@ public class DeleteCommand extends SubCommand {
         }
 
         TrophyManager.deleteTrophy(trophy);
-        player.sendMessage(Lang.get("trophy.deleted", Map.of("player", player.getName(),
-                "trophy", trophy.getDisplayName())));
+        PlayerDataManager.removeTrophyFromAllPlayers(trophy.getUUID());
+        player.sendMessage(Lang.get("command.delete", Map.of("trophy", trophy.getDisplayName())));
+
     }
 }

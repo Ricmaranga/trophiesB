@@ -16,47 +16,8 @@ import java.util.UUID;
 
 public class PlayerDataManager {
 
-    private static final File dataFolder = new File(Trophies.getInstance().getDataFolder(), "playerData");
-    private static FileConfiguration data;
-
     private static final Map<UUID, Map<UUID, Boolean>> playerTrophies = new HashMap<>();
 
-    public static void init() {
-        if (!dataFolder.exists()) {
-            dataFolder.mkdirs();
-        }
-
-    }
-
-    public static Map<UUID, Boolean> loadPlayerData(UUID uuid) {
-        File folder = new File(Trophies.getInstance().getDataFolder(), "playerData");
-        if (!folder.exists()) {
-            folder.mkdirs(); // just in case
-        }
-
-        File file = new File(folder, uuid.toString() + ".yml");
-        if (!file.exists()) {
-            return new HashMap<>();
-        }
-
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        Map<UUID, Boolean> data = new HashMap<>();
-
-        ConfigurationSection section = config.getConfigurationSection("unlocked");
-        if (section != null) {
-            for (String trophyId : section.getKeys(false)) {
-                try {
-                    UUID trophyUuid = UUID.fromString(trophyId);
-                    Boolean state = section.getBoolean(trophyId);
-                    data.put(trophyUuid, state);
-                } catch (IllegalArgumentException ignored) {
-                    Bukkit.getLogger().warning("Invalid UUID in " + Bukkit.getPlayer(uuid).getName() + "'s data: " + trophyId);
-                }
-            }
-        }
-
-        return data;
-    }
 
     public static void savePlayerData(Player player) {
         UUID playerId = player.getUniqueId();
@@ -66,7 +27,7 @@ public class PlayerDataManager {
         File folder = new File(Trophies.getInstance().getDataFolder(), "playerData");
         if (!folder.exists()) folder.mkdirs();
 
-        File file = new File(folder, playerId.toString() + ".yml");
+        File file = new File(folder, playerId + ".yml");
         FileConfiguration config = new YamlConfiguration();
 
         for (Map.Entry<UUID, Boolean> entry : trophies.entrySet()) {
@@ -155,15 +116,6 @@ public class PlayerDataManager {
         }
     }
 
-    public void reloadAll() {
-        playerTrophies.clear();
-        loadAll();
-    }
-
-    public static Map<UUID, Boolean> getTrophiesFor(UUID playerId) {
-        return playerTrophies.getOrDefault(playerId, new HashMap<>());
-    }
-
     public static Map<UUID, Boolean> getTrophies(Player player) {
         return playerTrophies.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>());
     }
@@ -179,7 +131,7 @@ public class PlayerDataManager {
             }
         }
 
-        data = YamlConfiguration.loadConfiguration(file);
+        FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
         ConfigurationSection section = data.getConfigurationSection("unlocked");
         if (section != null) {
@@ -194,7 +146,7 @@ public class PlayerDataManager {
 
     public static void unlockTrophy(Player player, Trophy trophy, boolean placed) {
         Map<UUID, Boolean> data = getTrophies(player);
-        data.put(trophy.getUUID(), placed ? true : false);
+        data.put(trophy.getUUID(), placed);
         savePlayerData(player);
     }
 
@@ -215,17 +167,21 @@ public class PlayerDataManager {
         }
     }
 
-    public static void removeTrophy(Player player, Trophy trophy) {
-        Map<UUID, Boolean> map = playerTrophies.get(player.getUniqueId());
-        if (map != null) {
-            map.remove(trophy.getUUID());
-        }
-    }
-
     public static void removeTrophyFromAllPlayers(UUID trophyId) {
         for (Map.Entry<UUID, Map<UUID, Boolean>> entry : playerTrophies.entrySet()) {
             entry.getValue().remove(trophyId);
             savePlayerData(entry.getKey(), entry.getValue());
         }
+    }
+
+    public static void removeTrophy(String player, Trophy trophy) {
+        if (playerTrophies.containsKey(Bukkit.getPlayer(player).getUniqueId())) {
+            getTrophies(Bukkit.getPlayer(player)).remove(trophy.getUUID());
+            playerTrophies.get(Bukkit.getPlayer(player).getUniqueId()).remove(trophy.getUUID());
+        }
+    }
+
+    public static Map<UUID, Map<UUID, Boolean>> getPlayerTrophies() {
+        return playerTrophies;
     }
 }

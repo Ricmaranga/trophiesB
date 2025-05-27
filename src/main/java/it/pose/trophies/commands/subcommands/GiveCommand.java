@@ -16,7 +16,6 @@ public class GiveCommand extends SubCommand {
 
     private final Trophies main = Trophies.getInstance();
     private final TrophyManager trophyManager = main.getTrophyManager();
-    private final PlayerDataManager playerDataManager = main.getPlayerDataManager();
 
     @Override
     public String getName() {
@@ -30,7 +29,7 @@ public class GiveCommand extends SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/trophies give <player> <trophyName>";
+        return Lang.get("usage") + " /" + Lang.get("default-command") + "give <player> <trophyName>";
     }
 
     @Override
@@ -41,10 +40,8 @@ public class GiveCommand extends SubCommand {
             player.sendMessage("§cPlayer not found!");
         }
 
-
-        TrophyManager trophyManager = Trophies.getInstance().getTrophyManager();
-        UUID uuid = trophyManager.getUUIDByName(args[2]);
-        Trophy trophy = trophyManager.getTrophy(uuid);
+        UUID uuid = Trophies.getInstance().getTrophyManager().getUUIDByName(args[2]);
+        Trophy trophy = TrophyManager.getTrophy(uuid);
 
         if (trophy == null) {
             player.sendMessage("§cTrophy not found!");
@@ -54,7 +51,6 @@ public class GiveCommand extends SubCommand {
 
         PlayerDataManager.unlockTrophy(target, trophy, false);
 
-
-        player.sendMessage(Lang.get("player.trophy-given", Map.of("player", args[1])));
+        player.sendMessage(Lang.get("command.give", Map.of("trophy", trophy.getName(), "player", args[1])));
     }
 }

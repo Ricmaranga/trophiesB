@@ -29,7 +29,7 @@ public class ChatInputRegistry {
             listeners.put(player.getUniqueId(), new Pending(prompt, callback));
             player.sendMessage(ChatColor.YELLOW + Lang.get("player.input." + prompt));
         }
-        player.sendMessage(ChatColor.GRAY + "Type 'cancel' to cancel the input");
+        player.sendMessage(Lang.get("input.cancel"));
     }
 
     public static void handle(Player player, String message) {
@@ -37,7 +37,7 @@ public class ChatInputRegistry {
         if (p == null) return;
 
         if (message.equalsIgnoreCase("cancel")) {
-            player.sendMessage(ChatColor.RED + "Input canceled.");    // you could also parameterize this
+            player.sendMessage(Lang.get("input.canceled"));
         } else {
             p.callback.accept(message);
         }

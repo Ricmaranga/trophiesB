@@ -27,20 +27,6 @@ public class Buttons {
                 .build();
     }
 
-    public static ItemStack nextPage() {
-        return new ButtonCreator.ButtonBuilder(new ItemStack(Material.ARROW))
-                .name("§aNext Page")
-                .onClick("nextPage", e -> e.player.sendMessage("Next page"))
-                .build();
-    }
-
-    public static ItemStack previousPage() {
-        return new ButtonCreator.ButtonBuilder(new ItemStack(Material.GOLDEN_CARROT))
-                .name("§9Previous page")
-                .onClick("previousPage", e -> e.player.sendMessage("Previous page"))
-                .build();
-    }
-
     public static ItemStack createTrophy() {
         return new ButtonCreator.ButtonBuilder(new ItemStack(Material.BAMBOO))
                 .name("§5Create trophy")

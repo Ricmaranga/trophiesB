@@ -17,9 +17,8 @@ public class ButtonClickContext {
         Inventory top = event.getView().getTopInventory();
         InventoryHolder holder = top.getHolder();
 
-        if (!(holder instanceof PluginGUIHolder guiHolder)) return;
+        if (!(holder instanceof PluginGUIHolder(String pluginId))) return;
 
-        // ✅ This is the key check:
-        if (!"trophies".equals(guiHolder.getPluginId())) return;
+        if (!"trophies".equals(pluginId)) return;
     }
 }

@@ -3,17 +3,7 @@ package it.pose.trophies;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-public class PluginGUIHolder implements InventoryHolder {
-    
-    private final String pluginId;
-
-    public PluginGUIHolder(String pluginId) {
-        this.pluginId = pluginId;
-    }
-
-    public String getPluginId() {
-        return pluginId;
-    }
+public record PluginGUIHolder(String pluginId) implements InventoryHolder {
 
     @Override
     public Inventory getInventory() {

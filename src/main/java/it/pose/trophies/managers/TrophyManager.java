@@ -3,7 +3,6 @@ package it.pose.trophies.managers;
 import it.pose.trophies.Trophies;
 import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -19,7 +18,6 @@ import java.util.*;
 
 public class TrophyManager {
 
-    private static final Trophies main = Trophies.getInstance();
 
     private static final Map<Integer, Trophy> trophiesBySlot = new HashMap<>();
 
@@ -28,15 +26,15 @@ public class TrophyManager {
     }
 
     public static Trophy getTrophyByName(String input) {
-        return main.trophies.get(UUID.fromString(input));
+        return Trophies.trophies.get(UUID.fromString(input));
     }
 
-    public Trophy getTrophy(UUID uuid) {
-        return main.trophies.get(uuid);
+    public static Trophy getTrophy(UUID uuid) {
+        return Trophies.trophies.get(uuid);
     }
 
     public static Trophy getTrophy(int slot) {
-        for (Trophy trophy : main.trophies.values()) {
+        for (Trophy trophy : Trophies.trophies.values()) {
             if (trophy.getSlot() != null && trophy.getSlot() == slot) {
                 return trophy;
             }
@@ -44,15 +42,8 @@ public class TrophyManager {
         return null;
     }
 
-    public static Trophy getTrophyById(UUID uuid) {
-        for (Trophy trophy : main.trophies.values()) {
-            if (trophy.getUUID() == uuid) return trophy;
-        }
-        return null;
-    }
-
     public UUID getUUIDByName(String name) {
-        for (Trophy trophy : main.trophies.values()) {
+        for (Trophy trophy : Trophies.trophies.values()) {
             if (trophy.getName().equals(name)) return trophy.getUUID();
         }
         return null;
@@ -67,7 +58,7 @@ public class TrophyManager {
         ConfigManager.saveTrophiesConfig();
 
         if (!trophiesBySlot.containsKey(trophy.getSlot())) trophiesBySlot.put(trophy.getSlot(), trophy);
-        if (!main.trophies.containsKey(trophy.getUUID())) main.trophies.put(trophy.getUUID(), trophy);
+        if (!Trophies.trophies.containsKey(trophy.getUUID())) Trophies.trophies.put(trophy.getUUID(), trophy);
 
         if (trophy.isDirty()) trophy.clearDirtyFlag();
     }
@@ -91,7 +82,7 @@ public class TrophyManager {
 
 
     public static void loadTrophies() {
-        main.trophies.clear();
+        Trophies.trophies.clear();
         trophiesBySlot.clear();
 
         FileConfiguration config = ConfigManager.getTrophiesConfig();
@@ -107,7 +98,7 @@ public class TrophyManager {
 
                 Trophy trophy = Trophy.deserialize(trophyData.getValues(false));
 
-                main.trophies.put(uuid, trophy);
+                Trophies.trophies.put(uuid, trophy);
                 trophiesBySlot.put(trophy.getSlot(), trophy);
 
             } catch (Exception e) {
@@ -118,7 +109,7 @@ public class TrophyManager {
 
         checkSlotConflicts();
 
-        Bukkit.getLogger().info("[Trophies] Loaded " + main.trophies.size() + " trophies.");
+        Bukkit.getLogger().info("[Trophies] Loaded " + Trophies.trophies.size() + " trophies.");
     }
 
     public void awardTrophy(Player player, UUID trophyUUID) {
@@ -160,24 +151,11 @@ public class TrophyManager {
         }
     }
 
-    public static void removeTrophyItemFromInventory(Player player, Trophy trophy) {
-        ItemStack target = trophy.toItemStack();
-
-        for (ItemStack item : player.getInventory().getContents()) {
-            if (item == null) continue;
-
-            if (itemsMatch(item, target)) {
-                item.setAmount(item.getAmount() - 1);
-                return;
-            }
-        }
-    }
-
     public static void deleteTrophy(Trophy trophy) {
         UUID id = trophy.getUUID();
         int slot = trophy.getSlot();
 
-        main.trophies.remove(id);
+        Trophies.trophies.remove(id);
         trophiesBySlot.remove(slot);
 
         FileConfiguration config = ConfigManager.getTrophiesConfig();
@@ -187,19 +165,9 @@ public class TrophyManager {
         PlayerDataManager.removeTrophyFromAllPlayers(id);
     }
 
-    private static boolean itemsMatch(ItemStack a, ItemStack b) {
-        if (a.getType() != b.getType()) return false;
-
-        ItemMeta metaA = a.getItemMeta();
-        ItemMeta metaB = b.getItemMeta();
-
-        if (metaA == null || metaB == null) return false;
-
-        if (!Objects.equals(metaA.getDisplayName(), metaB.getDisplayName())) return false;
-        return Objects.equals(metaA.getLore(), metaB.getLore());
+    public static Map<UUID, Trophy> getAllTrophies() {
+        return Trophies.trophies;
     }
-
-    public static Map<UUID, Trophy> getAllTrophies() { return main.trophies; }
 
     public void reloadTrophies() {
         File trophies = new File(Trophies.getInstance().getDataFolder(), "trophies.yml");
@@ -207,17 +175,19 @@ public class TrophyManager {
         trophiesFile.options().copyDefaults(true);
     }
 
-    public static boolean checkSlot(int slot) { return (trophiesBySlot.containsKey(slot) || !((slot >= 0) && (slot <= 26))); }
+    public static boolean checkSlot(int slot) {
+        return (trophiesBySlot.containsKey(slot) || !((slot >= 0) && (slot <= 26)));
+    }
 
     public static boolean isSlotOccupied(int slot, UUID exclude) {
-        return main.trophies.values().stream()
+        return Trophies.trophies.values().stream()
                 .anyMatch(t -> t.getSlot() == slot && !t.getUUID().equals(exclude));
     }
 
     private static void checkSlotConflicts() {
         Map<Integer, List<Trophy>> slotMap = new HashMap<>();
 
-        for (Trophy trophy : main.trophies.values()) {
+        for (Trophy trophy : Trophies.trophies.values()) {
             slotMap.computeIfAbsent(trophy.getSlot(), s -> new ArrayList<>()).add(trophy);
         }
 
