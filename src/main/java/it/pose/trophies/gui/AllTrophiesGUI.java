@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+
 public class AllTrophiesGUI {
 
     public static Inventory open(Player player) {
@@ -31,7 +33,7 @@ public class AllTrophiesGUI {
 
                 gui.setItem(trophy.getSlot(), button);
             } else {
-                player.sendMessage("Trophy " + trophy.getName() + " has no slot, change it in the config file");
+                player.sendMessage(Lang.get("trophy.noSlot", Map.of("trophy", trophy.getName())));
             }
         }
 

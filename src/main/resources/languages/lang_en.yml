@@ -1,29 +1,19 @@
 prefix: "&5[&6&lTrophies&r&5]"
 default-command: "trophies" # /trophies
 
+command:
+  delete: "&cTrophy %trophy% &cdeleted"
+  give: "&aTrophy &d%trophy% &agiven to the player %player%"
+  purge: "&cPlayer &e%player% &cpurged"
+  remove: "&aTrophy &d%trophy% &aremoved from player %player%"
+
 trophy:
-  input.cancel: "Write "
-  placed: "&aTrophy placed successfully!"
-  already-placed: "&eYou have already placed this trophy."
-  not-unlocked: "&cYou haven't unlocked this trophy yet."
-  deleted: "&cTrophy &f%name% &cdeleted"
-  not-found: "&cTrophy not found"
-  give-success: "&aYou gave %player% the trophy &e%trophy%&a."
-  receive: "&aYou received the trophy: &e%trophy%&a!"
-  set-name: "&aTrophy name set to: &e%name%"
-  set-show-name: "&aDisplay name set to: &e%name%"
-  set-material: "&aTrophy material set to: &f%material%"
-  slot-already-taken: "&cThat slot is already taken by another trophy."
-  slot-set: "&aSlot set to: &f%slot%"
-  invalid-slot: "&cInvalid slot. Must be between 0 and 26."
-  no-slot: "&cTrophy &b%name% &chas no slot, change it in the config file"
+  noSlot: "&cTrophy &e%trophy% &chas no slot set, change it in the trophies file"
+  placed: "&aTrophy %trophy% &aplaced in your showcase!"
+  invalidSlot: "&cThe slot selected is not valid or already in use"
 
 gui:
-  showcase-title: "&5&lYour Trophies"
-  admin-title: "&b&lTrophy Admin"
-  manage-title: "&a&lManage Trophy &f%trophy%"
-  edit-title: "&e&lEditing Trophy"
-  list-title: "&6&lAll Trophies"
+  create: "&d&lTrophy creation"
 
 buttons:
   set-name: "&6Set Name"
@@ -42,18 +32,6 @@ buttons:
   list: "&eList Trophies"
   reload: "&bReload Config"
 
-player:
-  no-permission: "&cYou do not have permission to use this command."
-  invalid-command: "&cThe command you just sent is not valid."
-  command-only-by-player: "&cThis command can only be used by players."
-  invalid-trophy: "&cThat trophy doesn't exist."
-  invalid-slot: "&cThat is not a valid slot number (0-26)."
-  already-has-trophy: "&ePlayer already has this trophy."
-  trophy-given: "&aTrophy given successfully to %player%."
-  input:
-    lore: "Please type your input in chat."
-    cancel: "(Type 'cancel' to cancel)" # do NOT change the 'cancel'
-    canceled: "Input canceled."
-
-commands:
-  usage: "Usage"
+input:
+  cancel: "&7Type 'cancel' to cancel the input" # do NOT change the 'cancel'
+  canceled: "&cInput canceled"
