@@ -6,6 +6,7 @@ import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
 import it.pose.trophies.trophies.Trophy;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,8 +23,6 @@ public class Trophies extends JavaPlugin {
     private PlayerDataManager playerDataManager;
 
     public static Map<UUID, Trophy> trophies = new HashMap<>();
-
-    public String defaultTitle = "Trophies Showcase";
 
     @Override
     public void onEnable() {
@@ -65,6 +64,8 @@ public class Trophies extends JavaPlugin {
 
         saveDefaultConfig();
         Lang.init(this);
+
+        new Metrics(this, 25989);
     }
 
     @Override
@@ -87,5 +88,6 @@ public class Trophies extends JavaPlugin {
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
     }
+
 
 }
