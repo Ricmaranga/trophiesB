@@ -60,7 +60,7 @@ public class EventListener implements Listener {
 
         e.setCancelled(true);
 
-        if (player.hasPermission("trophies.admin") && (e.getRawSlot() >= 27 && e.getRawSlot() <= 62) && e.getView().getTitle().equals(Lang.get("gui.create-title"))) {
+        if (player.hasPermission("trophies.admin") && (e.getRawSlot() >= 27 && e.getRawSlot() <= 62) && e.getView().getTitle().equals(Lang.get("gui.create"))) {
             e.setCancelled(false);
             ItemStack clicked = e.getCurrentItem();
             UUID id = TrophyManager.getUUIDFromItem(clicked);
@@ -137,7 +137,7 @@ public class EventListener implements Listener {
         }
 
         if (TrophyManager.isSlotOccupied(slot, trophy.getUUID())) {
-            player.sendMessage(Lang.get("trophy.slot-already-taken"));
+            player.sendMessage(Lang.get("trophy.invalidSlot"));
             Bukkit.getScheduler().runTaskLater(Trophies.getInstance(), () ->
                     player.openInventory(TrophyGUI.open(trophy)), 1L);
         }
