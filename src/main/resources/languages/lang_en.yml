@@ -11,6 +11,7 @@ trophy:
   noSlot: "&cTrophy &e%trophy% &chas no slot set, change it in the trophies file"
   placed: "&aTrophy %trophy% &aplaced in your showcase!"
   invalidSlot: "&cThe slot selected is not valid or already in use"
+  inexistent: "&cThe trophy &e%trophy% &cdoes not exist"
 
 gui:
   create: "&d&lTrophy creation"

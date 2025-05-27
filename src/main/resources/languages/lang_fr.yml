@@ -1,47 +1,38 @@
-prefix: "&7[&6Trophées&7]"
-default-command: "trophee" # /trophee
+prefix: "&5[&6&lTrophées&r&5]"
+default-command: "trophees" # /trophees
+
+command:
+  delete: "&cTrophée %trophy% &csupprimé"
+  give: "&aTrophée &d%trophy% &aattribué au joueur %player%"
+  purge: "&cJoueur &e%player% &ca été purgé"
+  remove: "&aTrophée &d%trophy% &aretiré du joueur %player%"
 
 trophy:
-  placed: "&aTrophée placé avec succès !"
-  already-placed: "&eVous avez déjà placé ce trophée."
-  not-unlocked: "&cVous n'avez pas encore débloqué ce trophée."
-  deleted: "&cTrophée supprimé."
-  give-success: "&aVous avez donné à %player% le trophée &e%trophy%&a."
-  receive: "&aVous avez reçu le trophée : &e%trophy%&a !"
-  set-name: "&aNom du trophée défini sur : &e%name%"
-  set-show-name: "&aNom d'affichage défini sur : &e%name%"
-  set-material: "&aMatériau du trophée défini sur : &f%material%"
-  slot-already-taken: "&cCet emplacement est déjà utilisé par un autre trophée."
-  slot-set: "&aEmplacement défini sur : &f%slot%"
+  noSlot: "&cLe trophée &e%trophy% &cn'a pas de slot défini, modifiez-le dans le fichier des trophées"
+  placed: "&aLe trophée &e%trophy% &aa été placé dans votre vitrine!"
+  invalidSlot: "&cLe slot sélectionné n'est pas valide ou est déjà utilisé"
+  inexistent: "&cLe trophée &e%trophy% &cn'existe pas"
 
 gui:
-  showcase-title: "&8Vos Trophées"
-  admin-title: "&bAdmin des Trophées"
-  create-title: "&aCréer un Nouveau Trophée"
-  edit-title: "&eÉdition du Trophée"
-  list-title: "&6Tous les Trophées"
+  create: "&d&lCréation de trophée"
 
 buttons:
-  set-name: "&6Définir le Nom"
-  set-show-name: "&6Définir le Nom d'Affichage"
-  set-material: "&6Définir le Matériau"
-  set-slot: "&6Définir l'Emplacement"
-  delete: "&cSupprimer le Trophée"
+  set-name: "&6Définir le nom"
+  set-show-name: "&6Définir le nom affiché"
+  set-material: "&6Définir le matériau"
+  set-slot: "&6Définir le slot"
+  delete:
+    name: "&cSupprimer le trophée"
+    lore: "&7Retire ce trophée du système"
   back: "&7Retour"
   create: "&aCréer"
+  manage: "&bGérer"
   cancel: "&cAnnuler"
   confirm: "&aConfirmer"
-  give: "&aDonner un Trophée"
-  list: "&eLister les Trophées"
-  reload: "&bRecharger la Configuration"
+  give: "&aAttribuer le trophée"
+  list: "&eLister les trophées"
+  reload: "&bRecharger la configuration"
 
-player:
-  no-permission: "&cVous n'avez pas la permission d'utiliser cette commande."
-  command-only-by-player: "&cCette commande ne peut être utilisée que par un joueur."
-  invalid-trophy: "&cCe trophée n'existe pas."
-  invalid-slot: "&cCe n'est pas un numéro d'emplacement valide (0-26)."
-  already-has-trophy: "&eLe joueur possède déjà ce trophée."
-  trophy-given: "&aTrophée donné avec succès."
-
-commands:
-  usage: "Utilisation"
+input:
+  cancel: "&7Tapez 'cancel' pour annuler la saisie"
+  canceled: "&cSaisie annulée"
