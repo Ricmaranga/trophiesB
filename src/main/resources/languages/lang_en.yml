@@ -33,6 +33,16 @@ buttons:
   list: "&eList Trophies"
   reload: "&bReload Config"
 
+help:
+  intro: "%prefix%"
+  admin: "&c/trophies admin &fto open the admin GUI"
+  delete: "&c/trophies delete <trophy> &fto delete a trophy"
+  give: "&c/trophies give <player> <trophy> &fto give a trophy to a player"
+  purge: "&c/trophies purge <player> &fto remove all the trophies from a player"
+  reload: "&c/trophies reload &fto reload the files in the plugin folder"
+  remove: "&c/trophies remove <player> <trophy> &fto remofe a trophy from a player"
+  list: "&c/trophies list"
+
 input:
   cancel: "&7Type 'cancel' to cancel the input" # do NOT change the 'cancel'
   canceled: "&cInput canceled"

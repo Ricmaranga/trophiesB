@@ -10,6 +10,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HelpCommand extends SubCommand {
@@ -31,24 +32,24 @@ public class HelpCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         player.sendMessage(Lang.prefix());
-        player.sendMessage(Lang.get("help.intro"));
+        player.sendMessage(Lang.get("help.intro", Map.of("intro", Lang.prefix())));
         player.sendMessage(Lang.get("help.admin"));
         player.sendMessage(Lang.get("help.delete"));
         player.sendMessage(Lang.get("help.give"));
         player.sendMessage(Lang.get("help.purge"));
         player.sendMessage(Lang.get("help.reload"));
         player.sendMessage(Lang.get("help.remove"));
-        player.sendMessage(Lang.get("help.list"));
 
         TextComponent message = new TextComponent("Hover or click ");
         TextComponent button = new TextComponent("§ehere ");
         TextComponent messagePt2 = new TextComponent("§rto see all the trophies");
+        String trophies = Trophies.trophies.
+                values().stream().
+                map(Trophy::getName).
+                collect(Collectors.joining(", "));
         button.setClickEvent(new ClickEvent(
                 ClickEvent.Action.RUN_COMMAND,
-                "/tell @s " + Trophies.trophies.
-                        values().stream().
-                        map(Trophy::getName).
-                        collect(Collectors.joining(", "))));
+                "/tell @p " + (trophies.isEmpty() ? "No trophies" : trophies)));
         button.setHoverEvent(new HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
                 new ComponentBuilder(Trophies.trophies.
