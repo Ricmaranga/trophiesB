@@ -16,7 +16,7 @@ import java.util.Map;
 public class AllTrophiesGUI {
 
     public static Inventory open(Player player) {
-        Inventory gui = Bukkit.createInventory(new PluginGUIHolder("trophies"), 27, Lang.get("gui.list-title"));
+        Inventory gui = Bukkit.createInventory(new PluginGUIHolder("trophies"), 27, Lang.get("gui.list"));
 
         Trophies.getInstance().getLogger().warning(TrophyManager.getAllTrophies().values().toString());
 

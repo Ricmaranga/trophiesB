@@ -9,12 +9,16 @@ command:
 
 trophy:
   noSlot: "&cTrophy &e%trophy% &chas no slot set, change it in the trophies file"
+  nameSet: "&aTrophy display name set to %name%"
   placed: "&aTrophy %trophy% &aplaced in your showcase!"
   invalidSlot: "&cThe slot selected is not valid or already in use"
   inexistent: "&cThe trophy &e%trophy% &cdoes not exist"
 
 gui:
-  create: "&d&lTrophy creation"
+  manage: "&d&lManage your Trophy"
+  showcase: "&6&lYour Trophies"
+  list: "&a&lAll the trophies"
+  admin: "&e&lAdmin GUI"
 
 buttons:
   set-name: "&6Set Name"
@@ -45,3 +49,4 @@ help:
 input:
   cancel: "&7Type 'cancel' to cancel the input" # do NOT change the 'cancel'
   canceled: "&cInput canceled"
+  id: "Waiting for your input"

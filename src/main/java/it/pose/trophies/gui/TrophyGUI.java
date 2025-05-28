@@ -14,7 +14,7 @@ public class TrophyGUI {
     private static final String[] color = {"RED", "BLUE", "GREEN", "LIME", "ORANGE", "PINK", "GRAY", "LIGHT_BLUE", "MAGENTA", "PURPLE"};
     private static final ItemStack glassPanel = new ItemStack(Material.valueOf(color[(int) (Math.random() * color.length)] + "_STAINED_GLASS_PANE"));
 
-    private static final String title = Lang.get("gui.create");
+    private static final String title = Lang.get("gui.manage");
 
     public static Inventory open(Trophy trophy) {
 
