@@ -10,7 +10,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HelpCommand extends SubCommand {
@@ -32,7 +31,6 @@ public class HelpCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         player.sendMessage(Lang.prefix());
-        player.sendMessage(Lang.get("help.intro", Map.of("intro", Lang.prefix())));
         player.sendMessage(Lang.get("help.admin"));
         player.sendMessage(Lang.get("help.delete"));
         player.sendMessage(Lang.get("help.give"));

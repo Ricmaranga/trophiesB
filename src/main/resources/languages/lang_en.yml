@@ -34,7 +34,6 @@ buttons:
   reload: "&bReload Config"
 
 help:
-  intro: "%prefix%"
   admin: "&c/trophies admin &fto open the admin GUI"
   delete: "&c/trophies delete <trophy> &fto delete a trophy"
   give: "&c/trophies give <player> <trophy> &fto give a trophy to a player"
