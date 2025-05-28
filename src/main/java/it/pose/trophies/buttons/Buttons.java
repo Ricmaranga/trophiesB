@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class Buttons {
                             input -> {
                                 trophy.setDisplayName(ChatColor.translateAlternateColorCodes('&', input));
                                 trophy.markDirty();
-                                e.player.sendMessage(Lang.prefix() + Lang.get("trophy.set-name", Map.of("name", ChatColor.translateAlternateColorCodes('&', input))));
+                                e.player.sendMessage(Lang.get("trophy.nameSet", Map.of("name", ChatColor.translateAlternateColorCodes('&', input))));
                                 Bukkit.getScheduler().runTask(Trophies.getInstance(), () -> e.player.openInventory(TrophyGUI.open(trophy)));
                             });
                 })
@@ -119,7 +120,12 @@ public class Buttons {
                         return;
                     }
 
-                    ItemStack raw = cursor.clone();     // <— keeps the head’s texture
+                    ItemStack raw = cursor.clone();
+                    ItemMeta meta = raw.getItemMeta();
+                    if(meta.getLore().contains("§7Click with an item on your cursor")) {
+                        meta.setLore(null);
+                    }
+                    raw.setItemMeta(meta);
                     trophy.setItem(raw);
 
                     String serialized;
@@ -138,9 +144,7 @@ public class Buttons {
 
                     e.player.sendMessage("§aMaterial updated to §f" + cursor.getType().name());
 
-                    Bukkit.getScheduler().runTask(Trophies.getInstance(), () -> {
-                        e.player.openInventory(TrophyGUI.open(trophy)); // ← uses .toItemStack() with glow
-                    });
+                    Bukkit.getScheduler().runTask(Trophies.getInstance(), () -> e.player.openInventory(TrophyGUI.open(trophy)));
                 })
                 .build();
     }

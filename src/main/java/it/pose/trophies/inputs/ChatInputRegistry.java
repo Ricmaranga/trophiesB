@@ -27,7 +27,7 @@ public class ChatInputRegistry {
     public static void waitFor(Player player, List<String> prompts, Consumer<String> callback) {
         for (String prompt : prompts) {
             listeners.put(player.getUniqueId(), new Pending(prompt, callback));
-            player.sendMessage(ChatColor.YELLOW + Lang.get("player.input." + prompt));
+            player.sendMessage(ChatColor.YELLOW + Lang.get("input." + prompt));
         }
         player.sendMessage(Lang.get("input.cancel"));
     }
