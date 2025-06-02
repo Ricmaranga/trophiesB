@@ -8,6 +8,7 @@ import it.pose.trophies.gui.AllTrophiesGUI;
 import it.pose.trophies.gui.TrophyGUI;
 import it.pose.trophies.inputs.ChatInputRegistry;
 import it.pose.trophies.listeners.EventListener;
+import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.TrophyManager;
 import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
@@ -90,11 +91,9 @@ public class Buttons {
                                 try {
                                     int slot = Integer.parseInt(input);
                                     if (TrophyManager.checkSlot(slot)) {
-                                        e.player.sendMessage("§cThe slot §d§l" + slot + " §cis already in use or is not valid");
                                         e.player.sendMessage(Lang.prefix() + Lang.get("trophy.slot-invalid", Map.of("slot", ChatColor.translateAlternateColorCodes('&', input))));
                                     } else {
                                         trophy.setSlot(slot);
-                                        e.player.sendMessage(ChatColor.GREEN + "Trophy slot set to: " + ChatColor.DARK_AQUA + input);
                                         e.player.sendMessage(Lang.prefix() + Lang.get("trophy.slot-set", Map.of("input", ChatColor.translateAlternateColorCodes('&', input))));
                                         TrophyManager.saveTrophy(trophy);
                                     }
@@ -128,10 +127,7 @@ public class Buttons {
                     } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
-                    Trophies.getInstance()
-                            .getConfigManager()
-                            .getConfig()
-                            .set("trophies." + trophy.getUUID() + ".item", serialized);
+                    ConfigManager.getConfig().set("trophies." + trophy.getUUID() + ".item", serialized);
 
 
                     TrophyManager.saveTrophy(trophy);
