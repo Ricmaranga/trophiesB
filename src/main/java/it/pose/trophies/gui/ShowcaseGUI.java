@@ -5,6 +5,7 @@ import it.pose.trophies.Lang;
 import it.pose.trophies.PluginGUIHolder;
 import it.pose.trophies.Trophies;
 import it.pose.trophies.buttons.ButtonCreator;
+import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
 import it.pose.trophies.trophies.Trophy;
@@ -23,12 +24,12 @@ import java.util.Map;
 
 public class ShowcaseGUI implements Listener {
 
-    public static int dim = 27;
+    public static int dim = ConfigManager.getConfig().getInt("showcase-rows") * 9;
 
     public static Inventory open(Player player) {
         Inventory gui = Bukkit.createInventory(new PluginGUIHolder("trophies"), dim, Lang.get("gui.showcase-title"));
 
-        for (int slot = 0; slot < 27; slot++) {
+        for (int slot = 0; slot < dim; slot++) {
             Trophy trophy = TrophyManager.getTrophy(slot);
             if (trophy == null) {
                 gui.setItem(slot, getLockedItem(slot));
@@ -80,7 +81,7 @@ public class ShowcaseGUI implements Listener {
     private static ItemStack placeTrophy(Trophy trophy) {
         return new ButtonCreator.ButtonBuilder(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE))
                 .name("§7" + trophy.getDisplayName())
-                .lore("§8The trophy goes here...")
+                .lore(Lang.get("buttons.place.lore"))
                 .onClick("place-" + trophy.getUUID(), e -> {
                     Player player = e.player;
 

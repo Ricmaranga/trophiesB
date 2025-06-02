@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class ConfigManager {
 
-    private FileConfiguration config;
+    private static FileConfiguration config;
 
     private static File trophiesFile;
     private static FileConfiguration trophiesConfig;
@@ -59,7 +59,7 @@ public class ConfigManager {
         trophiesConfig = YamlConfiguration.loadConfiguration(trophiesFile);
     }
 
-    public FileConfiguration getConfig() {
+    public static FileConfiguration getConfig() {
         return config;
     }
 }

@@ -4,6 +4,7 @@ import it.pose.trophies.Lang;
 import it.pose.trophies.PluginGUIHolder;
 import it.pose.trophies.Trophies;
 import it.pose.trophies.buttons.ButtonCreator;
+import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.TrophyManager;
 import it.pose.trophies.trophies.Trophy;
 import org.bukkit.Bukkit;
@@ -16,7 +17,7 @@ import java.util.Map;
 public class AllTrophiesGUI {
 
     public static Inventory open(Player player) {
-        Inventory gui = Bukkit.createInventory(new PluginGUIHolder("trophies"), 27, Lang.get("gui.list-title"));
+        Inventory gui = Bukkit.createInventory(new PluginGUIHolder("trophies"), ConfigManager.getConfig().getInt("showcase-rows") * 9, Lang.get("gui.list-title"));
 
         Trophies.getInstance().getLogger().warning(TrophyManager.getAllTrophies().values().toString());
 
