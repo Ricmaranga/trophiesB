@@ -71,10 +71,6 @@ public class Trophies extends JavaPlugin {
         return instance;
     }
 
-    public ConfigManager getConfigManager() {
-        return configManager;
-    }
-
     public TrophyManager getTrophyManager() {
         return trophyManager;
     }
@@ -82,6 +78,5 @@ public class Trophies extends JavaPlugin {
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
     }
-
 
 }
