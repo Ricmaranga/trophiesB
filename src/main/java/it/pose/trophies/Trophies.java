@@ -7,7 +7,6 @@ import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
 import it.pose.trophies.trophies.Trophy;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -55,11 +54,6 @@ public class Trophies extends JavaPlugin {
         File playerDataFolder = new File(getDataFolder(), "playerData");
         if (!playerDataFolder.exists()) {
             playerDataFolder.mkdirs();
-        }
-
-        for (Player player : getServer().getOnlinePlayers()) {
-            this.getLogger().info("Loading data for player " + player.getName());
-            playerDataManager.loadPlayer(player.getUniqueId());
         }
 
         saveDefaultConfig();
