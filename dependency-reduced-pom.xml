@@ -4,7 +4,7 @@
   <groupId>it.pose</groupId>
   <artifactId>trophies</artifactId>
   <name>trophies</name>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-alpha</version>
   <build>
     <defaultGoal>clean package</defaultGoal>
     <resources>

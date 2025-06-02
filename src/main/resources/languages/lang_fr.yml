@@ -1,38 +1,52 @@
-prefix: "&5[&6&lTrophées&r&5]"
+prefix: '&5[&6&lTrophées&r&5]'
 default-command: "trophees" # /trophees
 
 command:
-  delete: "&cTrophée %trophy% &csupprimé"
-  give: "&aTrophée &d%trophy% &aattribué au joueur %player%"
-  purge: "&cJoueur &e%player% &ca été purgé"
-  remove: "&aTrophée &d%trophy% &aretiré du joueur %player%"
+  delete: '&cTrophée %trophy% &csupprimé'
+  give: '&aTrophée &d%trophy% &adonné au joueur %player%'
+  purge: '&cJoueur &e%player% &cpurgé'
+  remove: '&aTrophée &d%trophy% &aretiré du joueur %player%'
 
 trophy:
-  noSlot: "&cLe trophée &e%trophy% &cn'a pas de slot défini, modifiez-le dans le fichier des trophées"
-  placed: "&aLe trophée &e%trophy% &aa été placé dans votre vitrine!"
-  invalidSlot: "&cLe slot sélectionné n'est pas valide ou est déjà utilisé"
-  inexistent: "&cLe trophée &e%trophy% &cn'existe pas"
+  inexistent: '&cLe trophée &e%trophy% &cn''existe pas'
+  invalidSlot: '&cLe slot sélectionné est invalide ou déjà utilisé'
+  nameSet: '&aNom d''affichage du trophée défini sur %name%'
+  noSlot: '&cLe trophée &e%trophy% &cn''a pas de slot défini, modifiez-le dans le fichier des trophées'
+  placed: '&aTrophée %trophy% &aplaçé dans votre vitrine !'
 
 gui:
-  create: "&d&lCréation de trophée"
+  admin: '&e&lInterface Admin'
+  list: '&a&lTous les trophées'
+  manage: '&d&lGérez votre Trophée'
+  showcase: '&6&lVos Trophées'
 
 buttons:
-  set-name: "&6Définir le nom"
-  set-show-name: "&6Définir le nom affiché"
-  set-material: "&6Définir le matériau"
-  set-slot: "&6Définir le slot"
+  back: '&7Retour'
+  cancel: '&cAnnuler'
+  confirm: '&aConfirmer'
+  create: '&aCréer'
   delete:
-    name: "&cSupprimer le trophée"
-    lore: "&7Retire ce trophée du système"
-  back: "&7Retour"
-  create: "&aCréer"
-  manage: "&bGérer"
-  cancel: "&cAnnuler"
-  confirm: "&aConfirmer"
-  give: "&aAttribuer le trophée"
-  list: "&eLister les trophées"
-  reload: "&bRecharger la configuration"
+    lore: '&7Retirer ce trophée du système'
+    name: '&cSupprimer le Trophée'
+  give: '&aDonner le Trophée'
+  list: '&eLister les Trophées'
+  manage: '&bGérer'
+  reload: '&bRecharger la Config'
+  set-material: '&6Définir le Matériau'
+  set-name: '&6Définir le Nom'
+  set-show-name: '&6Définir le Nom d''Affichage'
+  set-slot: '&6Définir le Slot'
+
+help:
+  admin: '&c/trophees admin &fpour ouvrir l''interface admin'
+  delete: '&c/trophees delete <trophée> &fpour supprimer un trophée'
+  give: '&c/trophees give <joueur> <trophée> &fpour donner un trophée à un joueur'
+  list: '&c/trophees list'
+  purge: '&c/trophees purge <joueur> &fpour retirer tous les trophées d''un joueur'
+  reload: '&c/trophees reload &fpour recharger les fichiers du plugin'
+  remove: '&c/trophees remove <joueur> <trophée> &fpour retirer un trophée d''un joueur'
 
 input:
-  cancel: "&7Tapez 'cancel' pour annuler la saisie"
-  canceled: "&cSaisie annulée"
+  cancel: '&7Tapez ''cancel'' pour annuler la saisie'
+  canceled: '&cSaisie annulée'
+  id: "En attente de votre saisie"

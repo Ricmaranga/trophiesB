@@ -9,13 +9,17 @@ command:
 
 trophy:
   noSlot: "&cTrophy &e%trophy% &chas no slot set, change it in the trophies file"
+  nameSet: "&aTrophy display name set to %name%"
   placed: "&aTrophy %trophy% &aplaced in your showcase!"
   invalidSlot: "&cThe slot selected is not valid or already in use"
   inexistent: "&cThe trophy &e%trophy% &cdoes not exist"
 
 gui:
-  create: "&d&lTrophy creation"
   showcase: "&6&lYour trophies"
+  create: "&d&lTrophy creation"
+  manage: "&d&lManage your Trophy"
+  list: "&a&lAll the trophies"
+  admin: "&e&lAdmin GUI"
 
 buttons:
   set-name: "&6Set Name"
@@ -33,8 +37,6 @@ buttons:
   give: "&aGive Trophy"
   list: "&eList Trophies"
   reload: "&bReload Config"
-  place:
-    lore: "&8The trophy goes here..."
 
 input:
   cancel: "&7Type 'cancel' to cancel the input" # do NOT change the 'cancel'

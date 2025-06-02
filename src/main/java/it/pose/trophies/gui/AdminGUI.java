@@ -17,7 +17,7 @@ public class AdminGUI {
 
         int slots = 3 * 9;
 
-        Inventory inv = Bukkit.createInventory(new PluginGUIHolder("trophies"), slots, Lang.get("gui.admin-title"));
+        Inventory inv = Bukkit.createInventory(new PluginGUIHolder("trophies"), slots, Lang.get("gui.admin"));
 
         for (int slot = 0; slot < slots; slot++) {
             if (slot <= 9 || slot >= 17)

@@ -3,36 +3,50 @@ default-command: "trofei" # /trofei
 
 command:
   delete: "&cTrofeo %trophy% &celiminato"
-  give: "&aTrofeo &d%trophy% &aassegnato al giocatore %player%"
-  purge: "&cGiocatore &e%player% &cripulito"
+  give: "&aTrofeo &d%trophy% &adato al giocatore %player%"
+  purge: "&cGiocatore &e%player% &cpulito"
   remove: "&aTrofeo &d%trophy% &arimosso dal giocatore %player%"
 
 trophy:
-  noSlot: "&cIl trofeo &e%trophy% &cnon ha uno slot impostato, cambialo nel file dei trofei"
-  placed: "&aIl trofeo &e%trophy% &aè stato posizionato nella tua vetrina!"
+  noSlot: "&cIl trofeo &e%trophy% &cnon ha uno slot impostato, modificalo nel file dei trofei"
+  nameSet: "&aNome del trofeo impostato su %name%"
+  placed: "&aTrofeo %trophy% &aposizionato nella tua vetrina!"
   invalidSlot: "&cLo slot selezionato non è valido o è già in uso"
   inexistent: "&cIl trofeo &e%trophy% &cnon esiste"
 
 gui:
-  create: "&d&lCreazione Trofeo"
+  manage: "&d&lGestisci il tuo Trofeo"
+  showcase: "&6&lI tuoi Trofei"
+  list: "&a&lTutti i trofei"
+  admin: "&e&lAdmin GUI"
 
 buttons:
-  set-name: "&6Imposta nome"
-  set-show-name: "&6Imposta nome visualizzato"
-  set-material: "&6Imposta materiale"
-  set-slot: "&6Imposta slot"
+  set-name: "&6Imposta Nome"
+  set-show-name: "&6Imposta Nome Visibile"
+  set-material: "&6Imposta Materiale"
+  set-slot: "&6Imposta Slot"
   delete:
-    name: "&cElimina trofeo"
+    name: "&cElimina Trofeo"
     lore: "&7Rimuovi questo trofeo dal sistema"
   back: "&7Indietro"
   create: "&aCrea"
   manage: "&bGestisci"
   cancel: "&cAnnulla"
   confirm: "&aConferma"
-  give: "&aAssegna trofeo"
-  list: "&eElenca trofei"
-  reload: "&bRicarica configurazione"
+  give: "&aDai Trofeo"
+  list: "&eElenca Trofei"
+  reload: "&bRicarica Configurazione"
+
+help:
+  admin: "&c/trofei admin &fper aprire l'interfaccia admin"
+  delete: "&c/trofei delete <trofeo> &fper eliminare un trofeo"
+  give: "&c/trofei give <giocatore> <trofeo> &fper dare un trofeo a un giocatore"
+  purge: "&c/trofei purge <giocatore> &fper rimuovere tutti i trofei da un giocatore"
+  reload: "&c/trofei reload &fper ricaricare i file nella cartella del plugin"
+  remove: "&c/trofei remove <giocatore> <trofeo> &fper rimuovere un trofeo da un giocatore"
+  list: "&c/trofei list"
 
 input:
-  cancel: "&7Digita 'cancel' per annullare l'input"
-  canceled: "&cInput annullato"
+  cancel: "&7Digita 'cancel' per annullare l'inserimento"
+  canceled: "&cInserimento annullato"
+  id: "In attesa del tuo input"

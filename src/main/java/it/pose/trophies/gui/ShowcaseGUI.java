@@ -27,7 +27,7 @@ public class ShowcaseGUI implements Listener {
     public static int dim = ConfigManager.getConfig().getInt("showcase-rows") * 9;
 
     public static Inventory open(Player player) {
-        Inventory gui = Bukkit.createInventory(new PluginGUIHolder("trophies"), dim, Lang.get("gui.showcase-title"));
+        Inventory gui = Bukkit.createInventory(new PluginGUIHolder("trophies"), dim, Lang.get("gui.showcase"));
 
         for (int slot = 0; slot < dim; slot++) {
             Trophy trophy = TrophyManager.getTrophy(slot);
