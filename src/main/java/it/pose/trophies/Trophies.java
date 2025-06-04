@@ -17,7 +17,6 @@ import java.util.UUID;
 public class Trophies extends JavaPlugin {
 
     private static Trophies instance;
-    private ConfigManager configManager;
     private TrophyManager trophyManager;
     private PlayerDataManager playerDataManager;
 
@@ -33,7 +32,7 @@ public class Trophies extends JavaPlugin {
         saveResource("config.yml", false);
         saveResource("trophies.yml", false);
 
-        configManager = new ConfigManager();
+        ConfigManager configManager = new ConfigManager();
         trophyManager = new TrophyManager();
         playerDataManager = new PlayerDataManager();
 

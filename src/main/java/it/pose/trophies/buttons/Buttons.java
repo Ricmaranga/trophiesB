@@ -17,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -121,7 +122,7 @@ public class Buttons {
 
                     ItemStack raw = cursor.clone();
                     ItemMeta meta = raw.getItemMeta();
-                    if(meta.getLore().contains("§7Click with an item on your cursor")) {
+                    if (meta.getLore().contains("§7Click with an item on your cursor")) {
                         meta.setLore(null);
                     }
                     raw.setItemMeta(meta);
@@ -130,8 +131,10 @@ public class Buttons {
                     String serialized;
                     try {
                         serialized = ItemSerialization.itemStackToBase64(raw);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
+                    } catch (IOException ioe) {
+                        e.player.sendMessage("§cFailed to serialize item for storage. Please contact an admin.");
+                        ioe.printStackTrace();
+                        return;
                     }
                     ConfigManager.getConfig().set("trophies." + trophy.getUUID() + ".item", serialized);
 
