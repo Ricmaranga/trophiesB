@@ -20,10 +20,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -52,39 +52,31 @@ public class EventListener implements Listener {
             return;
         }
 
-        InventoryHolder holder = e.getInventory().getHolder();
-        if (!(holder instanceof PluginGUIHolder)) {
+        if (!(e.getInventory().getHolder() instanceof PluginGUIHolder)) {
             return;
         }
 
         e.setCancelled(true);
 
         boolean isAdmin = player.hasPermission("trophies.admin");
-        boolean inEditableRange = e.getRawSlot() >= 27 && e.getRawSlot() <= 62;
         boolean isManageGUI = e.getView().getTitle().equals(Lang.get("gui.manage"));
-
-        if (!isAdmin || !inEditableRange || !isManageGUI) {
+        int slot = e.getRawSlot();
+        if (!isAdmin || slot < 27 || slot > ConfigManager.getConfig().getInt("showcase-rows") * 9 || !isManageGUI) {
             return;
         }
 
         e.setCancelled(false);
 
-        ItemStack clicked = e.getCurrentItem();
-        if (clicked == null) {
-            return;
-        }
+        Trophy trophy = Optional.ofNullable(e.getCurrentItem())
+                .map(TrophyManager::getUUIDFromItem)
+                .map(uuid -> Trophies.trophies.get(uuid))
+                .orElse(null);
 
-        UUID id = TrophyManager.getUUIDFromItem(clicked);
-        if (id == null) {
-            return;
-        }
-
-        Trophy trophy = Trophies.trophies.get(id);
         if (trophy == null) {
             return;
         }
 
-        trophy.setItem(clicked);
+        trophy.setItem(e.getCurrentItem());
     }
 
     @EventHandler
