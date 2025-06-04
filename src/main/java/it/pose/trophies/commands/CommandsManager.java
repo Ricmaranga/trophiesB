@@ -65,41 +65,58 @@ public class CommandsManager implements CommandExecutor, TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("trophies.admin")) return null;
-        if (args.length == 1) return List.of(subcommand.stream().map(SubCommand::getName).toArray(String[]::new));
-
-        if (args.length == 2) {
-            switch (args[0]) {
-                case "give", "purge":
-                    return Trophies.getInstance().getServer().getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .toList();
-            }
+        if (!sender.hasPermission("trophies.admin")) {
+            return null;
         }
 
-        if (args.length == 3) {
-            switch (args[0]) {
-                case "give" -> {
-                    return List.of(Trophies.trophies.values().stream().map(Trophy::getName).toArray(String[]::new));
-                }
+        int length = args.length;
 
-                case "remove" -> {
-                    Player target = Bukkit.getPlayerExact(args[1]);
-                    if (target == null) {
-                        return Collections.emptyList();
-                    }
-                    return List.of(PlayerDataManager.getTrophies(target)
-                            .keySet().stream()
-                            .map(TrophyManager::getTrophy)
-                            .filter(Objects::nonNull).map(Trophy::getName)
-                            .distinct().toArray(String[]::new));
-                }
+        if (length == 1) {
+            return subcommand.stream()
+                    .map(SubCommand::getName)
+                    .toList();
+        }
 
-                default -> {
+        if (length == 2) {
+            String firstArg = args[0];
+            if (firstArg.equals("give") || firstArg.equals("purge")) {
+                return Trophies.getInstance()
+                        .getServer()
+                        .getOnlinePlayers()
+                        .stream()
+                        .map(Player::getName)
+                        .toList();
+            }
+            return Collections.emptyList();
+        }
+
+        if (length == 3) {
+            String firstArg = args[0];
+
+            // 4a) "give" expects a trophy name
+            if (firstArg.equals("give")) {
+                return Trophies.trophies.values()
+                        .stream()
+                        .map(Trophy::getName)
+                        .toList();
+            }
+
+            if (firstArg.equals("remove")) {
+                Player target = Bukkit.getPlayerExact(args[1]);
+                if (target == null) {
                     return Collections.emptyList();
                 }
-
+                return PlayerDataManager.getTrophies(target)
+                        .keySet()
+                        .stream()
+                        .map(TrophyManager::getTrophy)
+                        .filter(Objects::nonNull)
+                        .map(Trophy::getName)
+                        .distinct()
+                        .toList();
             }
+
+            return Collections.emptyList();
         }
 
         return null;

@@ -5,6 +5,7 @@ import it.pose.trophies.PluginGUIHolder;
 import it.pose.trophies.Trophies;
 import it.pose.trophies.gui.TrophyGUI;
 import it.pose.trophies.inputs.ChatInputRegistry;
+import it.pose.trophies.managers.ConfigManager;
 import it.pose.trophies.managers.PlayerDataManager;
 import it.pose.trophies.managers.TrophyManager;
 import it.pose.trophies.trophies.Trophy;
@@ -122,28 +123,38 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onTrophyGUIClose(InventoryCloseEvent e) {
-        if (!(e.getPlayer() instanceof Player player)) return;
-        if (!e.getView().getTitle().equals(Lang.get("gui.manage-title"))) return;
-
-        if (!finalizingTrophies.remove(player.getUniqueId())) return;
-
-        ItemStack item = e.getInventory().getItem(0);
-        if (item == null || item.getType().isAir()) return;
-
-        Trophy trophy = Trophy.fromItemStack(item);
-        int slot = trophy.getSlot();
-
-        if (slot < 0 || slot > 26) {
-            player.sendMessage(Lang.get("trophy.invalidSlot"));
-            Bukkit.getScheduler().runTaskLater(Trophies.getInstance(), () ->
-                    player.openInventory(TrophyGUI.open(trophy)), 1L);
+        if (!(e.getPlayer() instanceof Player player)) {
             return;
         }
 
-        if (TrophyManager.isSlotOccupied(slot, trophy.getUUID())) {
+        if (!e.getView().getTitle().equals(Lang.get("gui.manage-title"))) {
+            return;
+        }
+
+        if (!finalizingTrophies.remove(player.getUniqueId())) {
+            return;
+        }
+
+        ItemStack item = e.getInventory().getItem(0);
+        if (item == null || item.getType().isAir()) {
+            return;
+        }
+
+        Trophy trophy = Trophy.fromItemStack(item);
+        int slot = trophy.getSlot();
+        int maxSlot = ConfigManager.getConfig().getInt("showcase-rows") * 9;
+
+        boolean invalidIndex = slot < 0 || slot > maxSlot;
+        boolean occupied = !invalidIndex
+                && TrophyManager.isSlotOccupied(slot, trophy.getUUID());
+
+        if (invalidIndex || occupied) {
             player.sendMessage(Lang.get("trophy.invalidSlot"));
-            Bukkit.getScheduler().runTaskLater(Trophies.getInstance(), () ->
-                    player.openInventory(TrophyGUI.open(trophy)), 1L);
+            Bukkit.getScheduler().runTaskLater(
+                    Trophies.getInstance(),
+                    () -> player.openInventory(TrophyGUI.open(trophy)),
+                    1L
+            );
         }
     }
 }
