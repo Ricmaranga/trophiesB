@@ -40,11 +40,7 @@ public class CommandsManager implements CommandExecutor, TabExecutor {
         if (sender instanceof Player player) {
 
             if (args.length == 0) {
-                try {
-                    player.openInventory(ShowcaseGUI.open(player));
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                player.openInventory(ShowcaseGUI.open(player));
                 return true;
             }
 
