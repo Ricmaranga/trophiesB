@@ -3,8 +3,6 @@ package it.pose.trophies.listeners;
 import it.pose.trophies.Lang;
 import it.pose.trophies.PluginGUIHolder;
 import it.pose.trophies.Trophies;
-import it.pose.trophies.buttons.ButtonClickContext;
-import it.pose.trophies.buttons.ButtonRegistry;
 import it.pose.trophies.gui.TrophyGUI;
 import it.pose.trophies.inputs.ChatInputRegistry;
 import it.pose.trophies.managers.PlayerDataManager;
@@ -21,14 +19,12 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public class EventListener implements Listener {
 
@@ -51,35 +47,43 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (!(e.getWhoClicked() instanceof Player player)) return;
+        if (!(e.getWhoClicked() instanceof Player player)) {
+            return;
+        }
 
-        Inventory inv = e.getInventory();
-
-        InventoryHolder holder = inv.getHolder();
-        if (!(holder instanceof PluginGUIHolder)) return;
+        InventoryHolder holder = e.getInventory().getHolder();
+        if (!(holder instanceof PluginGUIHolder)) {
+            return;
+        }
 
         e.setCancelled(true);
 
-        if (player.hasPermission("trophies.admin") && (e.getRawSlot() >= 27 && e.getRawSlot() <= 62) && e.getView().getTitle().equals(Lang.get("gui.create"))) {
-            e.setCancelled(false);
-            ItemStack clicked = e.getCurrentItem();
-            UUID id = TrophyManager.getUUIDFromItem(clicked);
+        boolean isAdmin = player.hasPermission("trophies.admin");
+        boolean inEditableRange = e.getRawSlot() >= 27 && e.getRawSlot() <= 62;
+        boolean isManageGUI = e.getView().getTitle().equals(Lang.get("gui.manage"));
 
-            if (id != null) {
-                Trophy trophy = Trophies.trophies.get(id);
-                if (trophy != null) {
-                    trophy.setItem(clicked);
-                }
-            }
+        if (!isAdmin || !inEditableRange || !isManageGUI) {
+            return;
         }
 
-        String id = ButtonRegistry.getId(e.getCurrentItem());
-        if (id == null) return;
+        e.setCancelled(false);
 
-        Consumer<ButtonClickContext> handler = ButtonRegistry.getAction(id);
-        if (handler != null) {
-            handler.accept(new ButtonClickContext(player, e));
+        ItemStack clicked = e.getCurrentItem();
+        if (clicked == null) {
+            return;
         }
+
+        UUID id = TrophyManager.getUUIDFromItem(clicked);
+        if (id == null) {
+            return;
+        }
+
+        Trophy trophy = Trophies.trophies.get(id);
+        if (trophy == null) {
+            return;
+        }
+
+        trophy.setItem(clicked);
     }
 
     @EventHandler
