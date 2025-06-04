@@ -6,7 +6,7 @@
 
     <groupId>it.pose</groupId>
     <artifactId>trophies</artifactId>
-    <version>1.0-alpha</version>
+    <version>alpha.3</version>
     <packaging>jar</packaging>
 
     <name>trophies</name>

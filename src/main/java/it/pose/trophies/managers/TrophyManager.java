@@ -181,7 +181,7 @@ public class TrophyManager {
     }
 
     public static boolean checkSlot(int slot) {
-        return (trophiesBySlot.containsKey(slot) || !((slot >= 0) && (slot <= 26)));
+        return (trophiesBySlot.containsKey(slot) || !((slot >= 0) && (slot <= ConfigManager.getConfig().getInt("showcase-rows") * 9)));
     }
 
     public static boolean isSlotOccupied(int slot, UUID exclude) {
