@@ -59,6 +59,7 @@ public class Trophies extends JavaPlugin {
         Lang.init(this);
 
         new Metrics(this, 25989);
+        new UpdateChecker(this, 125457).checkForUpdate();
     }
 
     @Override
